@@ -44,6 +44,36 @@ python src/eda.py
 
 El resultado principal queda en [`reports/eda_report.md`](reports/eda_report.md). Las gráficas y tablas se regeneran automáticamente a partir de los datos originales.
 
+## Base de datos en Supabase
+
+El esquema de producción contiene nueve tablas:
+
+| Tabla | Función |
+|---|---|
+| `dataset_snapshots` | Versiones y metadatos de cada corte de datos |
+| `stations` | Catálogo geográfico de estaciones |
+| `observations` | Demanda real por estación e intervalo |
+| `context_observations` | Clima y eventos por intervalo |
+| `pipeline_runs` | Historial de ejecuciones y errores |
+| `model_versions` | Modelos, parámetros, métricas y champion |
+| `forecast_cycles` | Ciclos abiertos y cerrados de predicción |
+| `predictions` | Pronósticos por estación y horizonte |
+| `evaluation_metrics` | WAPE, accuracy, MAE, RMSE y drift |
+
+Las migraciones SQL están en `supabase/migrations/`. Las tablas tienen RLS activo y no exponen acceso directo a `anon` ni `authenticated`. Los procesos administrativos deben ejecutarse desde un servidor o GitHub Actions con la clave de servicio almacenada como secreto.
+
+Para repetir la migración inicial:
+
+```powershell
+Copy-Item .env.example .env
+# Completa .env sin subirlo a Git.
+$env:SUPABASE_URL="https://TU_PROJECT_REF.supabase.co"
+$env:SUPABASE_SERVICE_ROLE_KEY="TU_CLAVE_DE_SERVICIO"
+python src/migrate_supabase.py
+```
+
+La carga usa `upsert`, por lo que repetirla actualiza las filas existentes y no duplica las observaciones.
+
 ## Fuente
 
 - API: `https://pulso-transmi.72-60-245-2.sslip.io`
