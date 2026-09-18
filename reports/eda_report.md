@@ -19,8 +19,8 @@ El detalle está en `reports/tables/quality_checks.csv`.
 1. **Estaciones:** `Ricaurte - NQS` presenta la demanda promedio más alta (683.7), mientras `Portal Usme` registra la menor (217.9).
 2. **Hora:** la mayor demanda promedio ocurre alrededor de las **17:00**.
 3. **Día:** el día con mayor demanda promedio es **martes** (382.8 pasajeros por intervalo).
-4. **Lluvia:** la demanda promedio es 356.8 con lluvia y 127.7 sin lluvia. Esta comparación describe asociación y no causalidad.
-5. **Eventos:** la demanda promedio es 361.1 durante eventos y 317.6 sin eventos.
+4. **Lluvia:** la demanda promedio es 353.4 con lluvia muy baja, 370.4 con lluvia moderada y 343.8 con lluvia alta. Esta comparación describe asociación y no causalidad.
+5. **Eventos:** usando intensidad mayor que 0,1 para identificar un evento activo, la demanda promedio es 420.1 con evento y 352.8 sin evento activo.
 
 ## Implicaciones para el modelo
 
@@ -32,10 +32,12 @@ El detalle está en `reports/tables/quality_checks.csv`.
 
 ## Figuras
 
-1. `01_demanda_diaria.png`: evolución diaria total.
-2. `02_demanda_por_hora.png`: patrón horario por tipo de día.
-3. `03_demanda_por_estacion.png`: comparación de estaciones.
-4. `04_mapa_calor_dia_hora.png`: intensidad por día y hora.
-5. `05_demanda_lluvia_eventos.png`: demanda por condiciones de contexto.
-6. `06_demanda_temperatura.png`: relación entre temperatura y demanda.
-7. `07_mapa_estaciones.png`: ubicación y demanda promedio.
+1. `00_distribucion_demanda.png`: distribución de la variable objetivo.
+2. `01_demanda_diaria.png`: evolución diaria total.
+3. `02_demanda_por_hora.png`: patrón horario por tipo de día.
+4. `03_demanda_por_estacion.png`: comparación de estaciones.
+5. `04_mapa_calor_dia_hora.png`: intensidad por día y hora.
+6. `05_demanda_lluvia_eventos.png`: demanda por condiciones de contexto.
+7. `06_demanda_temperatura.png`: relación entre temperatura y demanda.
+8. `07_mapa_estaciones.png`: ubicación y demanda promedio.
+9. `08_correlaciones.png`: correlaciones lineales entre demanda y contexto.

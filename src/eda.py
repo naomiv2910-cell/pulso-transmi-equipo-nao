@@ -134,8 +134,13 @@ def prepare_analysis(
         data["weekday_number"].map(WEEKDAY_ES), categories=WEEKDAY_ORDER, ordered=True
     )
     data["day_type"] = data["weekday_number"].ge(5).map({True: "Fin de semana", False: "Día laboral"})
-    data["rain"] = data["rain_mm"].gt(0).map({True: "Con lluvia", False: "Sin lluvia"})
-    data["event"] = data["event_intensity"].gt(0).map({True: "Con evento", False: "Sin evento"})
+    data["rain_level"] = pd.cut(
+        data["rain_mm"],
+        bins=[-float("inf"), 0.1, 0.5, float("inf")],
+        labels=["Muy baja (≤0,1 mm)", "Moderada (0,1–0,5 mm)", "Alta (>0,5 mm)"],
+    )
+    # La intensidad presenta colas positivas casi nulas; 0,1 evita tratarlas como eventos activos.
+    data["event"] = data["event_intensity"].gt(0.1).map({True: "Evento activo", False: "Sin evento activo"})
     return data
 
 
@@ -162,8 +167,8 @@ def create_tables(data: pd.DataFrame, quality: pd.DataFrame) -> dict[str, pd.Dat
         .rename(columns={"demand": "mean_demand"})
     )
     context_summary = (
-        data.groupby(["rain", "event"], as_index=False)["demand"]
-        .agg(["count", "mean", "median", "std"])
+        data.groupby(["rain_level", "event"], observed=False)["demand"]
+        .agg(count="size", mean="mean", median="median", std="std")
         .reset_index()
     )
 
@@ -180,6 +185,17 @@ def create_tables(data: pd.DataFrame, quality: pd.DataFrame) -> dict[str, pd.Dat
 
 
 def create_figures(data: pd.DataFrame, station_summary: pd.DataFrame) -> None:
+    upper_99 = data["demand"].quantile(0.99)
+    plt.figure()
+    sns.histplot(data=data[data["demand"] <= upper_99], x="demand", bins=45, color="#d81b60")
+    plt.axvline(data["demand"].mean(), color="#1769aa", linestyle="--", linewidth=2, label="Media")
+    plt.axvline(data["demand"].median(), color="#f57c00", linestyle=":", linewidth=2, label="Mediana")
+    plt.title("Distribución de la demanda por intervalo")
+    plt.xlabel("Demanda (hasta el percentil 99)")
+    plt.ylabel("Número de observaciones")
+    plt.legend()
+    save_figure("00_distribucion_demanda.png")
+
     daily = data.groupby("date", as_index=False)["demand"].sum()
     plt.figure(figsize=(12, 5))
     sns.lineplot(data=daily, x="date", y="demand", color="#d81b60", linewidth=2)
@@ -229,14 +245,14 @@ def create_figures(data: pd.DataFrame, station_summary: pd.DataFrame) -> None:
     plt.figure()
     sns.boxplot(
         data=sampled,
-        x="rain",
+        x="rain_level",
         y="demand",
         hue="event",
         showfliers=False,
         palette=["#5c6bc0", "#ef6c00"],
     )
     plt.title("Demanda según lluvia y presencia de eventos")
-    plt.xlabel("Condición de lluvia")
+    plt.xlabel("Nivel de lluvia por intervalo")
     plt.ylabel("Demanda por intervalo")
     plt.legend(title="Contexto")
     save_figure("05_demanda_lluvia_eventos.png")
@@ -246,15 +262,19 @@ def create_figures(data: pd.DataFrame, station_summary: pd.DataFrame) -> None:
         data=data.sample(min(15000, len(data)), random_state=7),
         x="temperature_c",
         y="demand",
-        hue="rain",
+        hue="rain_level",
         alpha=0.25,
         s=20,
-        palette=["#546e7a", "#1e88e5"],
+        palette={
+            "Muy baja (≤0,1 mm)": "#90a4ae",
+            "Moderada (0,1–0,5 mm)": "#42a5f5",
+            "Alta (>0,5 mm)": "#1565c0",
+        },
     )
     plt.title("Demanda y temperatura observada")
     plt.xlabel("Temperatura (°C)")
     plt.ylabel("Demanda por intervalo")
-    plt.legend(title="Lluvia")
+    plt.legend(title="Nivel de lluvia")
     save_figure("06_demanda_temperatura.png")
 
     station_map = (
@@ -290,6 +310,16 @@ def create_figures(data: pd.DataFrame, station_summary: pd.DataFrame) -> None:
     plt.legend(handles, labels, bbox_to_anchor=(1.02, 1), loc="upper left")
     save_figure("07_mapa_estaciones.png")
 
+    correlations = data[["demand", "rain_mm", "temperature_c", "event_intensity"]].corr()
+    correlations.index = ["Demanda", "Lluvia", "Temperatura", "Intensidad de evento"]
+    correlations.columns = correlations.index
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(correlations, annot=True, fmt=".2f", cmap="RdBu_r", center=0, vmin=-1, vmax=1)
+    plt.title("Correlaciones lineales entre demanda y contexto")
+    plt.xlabel("")
+    plt.ylabel("")
+    save_figure("08_correlaciones.png")
+
 
 def write_report(
     data: pd.DataFrame,
@@ -303,7 +333,7 @@ def write_report(
     busiest = station_summary.iloc[0]
     quietest = station_summary.iloc[-1]
     peak_hour = int(hourly.index[0])
-    rain_means = data.groupby("rain")["demand"].mean()
+    rain_means = data.groupby("rain_level", observed=False)["demand"].mean()
     event_means = data.groupby("event")["demand"].mean()
     failed = int((quality["estado"] != "OK").sum())
 
@@ -328,8 +358,8 @@ El detalle está en `reports/tables/quality_checks.csv`.
 1. **Estaciones:** `{busiest['station_name']}` presenta la demanda promedio más alta ({busiest['mean_demand']:.1f}), mientras `{quietest['station_name']}` registra la menor ({quietest['mean_demand']:.1f}).
 2. **Hora:** la mayor demanda promedio ocurre alrededor de las **{peak_hour}:00**.
 3. **Día:** el día con mayor demanda promedio es **{weekday.index[0]}** ({weekday.iloc[0]:.1f} pasajeros por intervalo).
-4. **Lluvia:** la demanda promedio es {rain_means.get('Con lluvia', float('nan')):.1f} con lluvia y {rain_means.get('Sin lluvia', float('nan')):.1f} sin lluvia. Esta comparación describe asociación y no causalidad.
-5. **Eventos:** la demanda promedio es {event_means.get('Con evento', float('nan')):.1f} durante eventos y {event_means.get('Sin evento', float('nan')):.1f} sin eventos.
+4. **Lluvia:** la demanda promedio es {rain_means.get('Muy baja (≤0,1 mm)', float('nan')):.1f} con lluvia muy baja, {rain_means.get('Moderada (0,1–0,5 mm)', float('nan')):.1f} con lluvia moderada y {rain_means.get('Alta (>0,5 mm)', float('nan')):.1f} con lluvia alta. Esta comparación describe asociación y no causalidad.
+5. **Eventos:** usando intensidad mayor que 0,1 para identificar un evento activo, la demanda promedio es {event_means.get('Evento activo', float('nan')):.1f} con evento y {event_means.get('Sin evento activo', float('nan')):.1f} sin evento activo.
 
 ## Implicaciones para el modelo
 
@@ -341,13 +371,15 @@ El detalle está en `reports/tables/quality_checks.csv`.
 
 ## Figuras
 
-1. `01_demanda_diaria.png`: evolución diaria total.
-2. `02_demanda_por_hora.png`: patrón horario por tipo de día.
-3. `03_demanda_por_estacion.png`: comparación de estaciones.
-4. `04_mapa_calor_dia_hora.png`: intensidad por día y hora.
-5. `05_demanda_lluvia_eventos.png`: demanda por condiciones de contexto.
-6. `06_demanda_temperatura.png`: relación entre temperatura y demanda.
-7. `07_mapa_estaciones.png`: ubicación y demanda promedio.
+1. `00_distribucion_demanda.png`: distribución de la variable objetivo.
+2. `01_demanda_diaria.png`: evolución diaria total.
+3. `02_demanda_por_hora.png`: patrón horario por tipo de día.
+4. `03_demanda_por_estacion.png`: comparación de estaciones.
+5. `04_mapa_calor_dia_hora.png`: intensidad por día y hora.
+6. `05_demanda_lluvia_eventos.png`: demanda por condiciones de contexto.
+7. `06_demanda_temperatura.png`: relación entre temperatura y demanda.
+8. `07_mapa_estaciones.png`: ubicación y demanda promedio.
+9. `08_correlaciones.png`: correlaciones lineales entre demanda y contexto.
 """
     (REPORT_DIR / "eda_report.md").write_text(report, encoding="utf-8")
 
