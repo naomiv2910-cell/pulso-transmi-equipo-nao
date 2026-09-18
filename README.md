@@ -88,6 +88,10 @@ Los modelos quedan en `artifacts/`; las métricas y predicciones de validación
 en `reports/tables/`, y la gráfica comparativa en
 `reports/figures/09_comparacion_modelos.png`.
 
+Para producción, `artifacts/champion.joblib` contiene en un solo archivo los
+cuatro modelos correspondientes a los horizontes de 15, 30, 45 y 60 minutos,
+junto con sus variables, versiones y métricas de validación.
+
 ## Fuente
 
 - API: `https://pulso-transmi.72-60-245-2.sslip.io`

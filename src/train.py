@@ -168,6 +168,28 @@ def main() -> None:
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
+    # Artefacto único para producción: permite cargar una sola vez los cuatro
+    # modelos y seleccionar el horizonte requerido durante la inferencia.
+    packaged_models = {}
+    for horizon in HORIZONS:
+        artifact = joblib.load(ARTIFACTS / f"model_h{horizon}.joblib")
+        packaged_models[15 * horizon] = artifact
+    joblib.dump(
+        {
+            "artifact_type": "pulso_transmi_champion",
+            "artifact_version": "1.0.0",
+            "created_at": summary["generated_at"],
+            "frequency_minutes": 15,
+            "horizons_minutes": list(packaged_models),
+            "validation_start": summary["validation_start"],
+            "validation_end": summary["validation_end"],
+            "champion_by_horizon": summary["champion_by_horizon"],
+            "models": packaged_models,
+        },
+        ARTIFACTS / "champion.joblib",
+        compress=3,
+    )
+
     pivot = metrics_frame.pivot(index="horizon_minutes", columns="model", values="accuracy_pct")
     ax = pivot.plot(kind="bar", figsize=(11, 6), color=["#b8b8b8", "#f4a6c1", "#d6b3e8", "#6c4ab6"])
     ax.set(title="Comparación temporal de modelos", xlabel="Horizonte (minutos)", ylabel="Accuracy (%)")
