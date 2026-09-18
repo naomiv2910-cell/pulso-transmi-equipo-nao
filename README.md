@@ -74,6 +74,20 @@ python src/migrate_supabase.py
 
 La carga usa `upsert`, por lo que repetirla actualiza las filas existentes y no duplica las observaciones.
 
+## Entrenar y comparar modelos
+
+El entrenamiento reserva los últimos siete días como validación temporal y
+compara tres baselines con Gradient Boosting para horizontes de 15, 30, 45 y
+60 minutos:
+
+```powershell
+python src/train.py
+```
+
+Los modelos quedan en `artifacts/`; las métricas y predicciones de validación
+en `reports/tables/`, y la gráfica comparativa en
+`reports/figures/09_comparacion_modelos.png`.
+
 ## Fuente
 
 - API: `https://pulso-transmi.72-60-245-2.sslip.io`

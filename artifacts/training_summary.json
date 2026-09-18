@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-09-18T22:37:51.988004+00:00",
+  "validation_start": "2026-09-02T05:00:00+00:00",
+  "validation_end": "2026-09-09T04:45:00+00:00",
+  "frequency_minutes": 15,
+  "horizons_minutes": [
+    15,
+    30,
+    45,
+    60
+  ],
+  "champion_by_horizon": {
+    "15": {
+      "model": "gradient_boosting",
+      "wape": 0.1325428434534952,
+      "accuracy_pct": 86.74571565465048,
+      "mae": 47.099418743141435
+    },
+    "30": {
+      "model": "gradient_boosting",
+      "wape": 0.13807059044882689,
+      "accuracy_pct": 86.19294095511731,
+      "mae": 48.97866307347758
+    },
+    "45": {
+      "model": "gradient_boosting",
+      "wape": 0.1446901726417881,
+      "accuracy_pct": 85.5309827358212,
+      "mae": 50.97342073820656
+    },
+    "60": {
+      "model": "gradient_boosting",
+      "wape": 0.1489823533231075,
+      "accuracy_pct": 85.10176466768925,
+      "mae": 52.38438906127393
+    }
+  }
+}
