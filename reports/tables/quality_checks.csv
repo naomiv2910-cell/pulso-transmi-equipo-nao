@@ -1,0 +1,14 @@
+validacion,resultado,esperado,estado
+Filas de estaciones,12,12,OK
+Filas de observaciones,51840,51840,OK
+Filas de contexto,4320,4320,OK
+Duplicados de estación,0,0,OK
+Duplicados de observación,0,0,OK
+Duplicados de contexto,0,0,OK
+Nulos en estaciones,0,0,OK
+Nulos en observaciones,0,0,OK
+Nulos en contexto,0,0,OK
+Demandas negativas,0,0,OK
+Estaciones con cantidad de periodos incorrecta,0,0,OK
+Periodos ausentes en contexto,0,0,OK
+IDs de observaciones sin catálogo,0,0,OK
