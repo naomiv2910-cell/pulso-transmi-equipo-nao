@@ -9,6 +9,7 @@ from ingest import fetch_incremental
 from metrics import accuracy, mean_station_wape, score, wape
 from monitor import classify_drift, recommend_retraining
 from reconcile_submission import validate
+from reconcile_submission import find_payload
 
 def test_wape_is_mean_across_stations():
     frame=pd.DataFrame({"station_id":["a","a","b"],"actual":[10,10,100],"predicted":[0,0,100]})
@@ -30,6 +31,10 @@ def test_reconcile_validation_builds_exact_targets():
     assert len(cycle["targets"])==48
 def test_reconcile_rejects_non_official():
     with pytest.raises(Exception):validate({"status":"accepted","is_official":False},{})
+def test_reconcile_can_read_payload_from_ci_secret(monkeypatch):
+    monkeypatch.setenv("PULSO_SUBMISSION_PAYLOAD",json.dumps({"cycle_id":"ci-cycle"}))
+    path,payload=find_payload("ci-cycle")
+    assert str(path)=="github-secret:PULSO_SUBMISSION_PAYLOAD" and payload["cycle_id"]=="ci-cycle"
 class Pages:
     def __init__(self,pages):self.pages=iter(pages)
     def get_json(self,*a,**k):return next(self.pages)

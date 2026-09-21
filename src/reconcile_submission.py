@@ -14,6 +14,11 @@ def find_payload(cycle_id: str) -> tuple[Path, dict]:
         if path.name.startswith("receipt-"): continue
         value = json.loads(path.read_text())
         if value.get("cycle_id") == cycle_id: return path, value
+    encoded = os.getenv("PULSO_SUBMISSION_PAYLOAD")
+    if encoded:
+        value = json.loads(encoded)
+        if value.get("cycle_id") == cycle_id:
+            return Path("github-secret:PULSO_SUBMISSION_PAYLOAD"), value
     raise PredictionError("No existe el payload original; no se reconstruirán predicciones")
 
 def validate(receipt: dict, payload: dict) -> dict:
@@ -48,7 +53,8 @@ def run(submission_id: str, persist: bool, *, api: APIClient | None = None,
     model = payload.get("model", {})
     if not model.get("version") or not model.get("git_commit"): raise PredictionError("Metadata de modelo incompleta")
     print(f"Submission: {submission_id}\nEstado: accepted / oficial\nCiclo: {cycle['cycle_id']}")
-    print(f"Payload original: {path.relative_to(ROOT)}\nPredicciones verificadas: 48")
+    source = str(path) if str(path).startswith("github-secret:") else str(path.relative_to(ROOT))
+    print(f"Payload original: {source}\nPredicciones verificadas: 48")
     if not persist:
         print("Dry-run completado; no se escribió en Supabase."); return 0
     logger = logger or SupabaseLogger()
