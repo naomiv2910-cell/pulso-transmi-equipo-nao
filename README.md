@@ -169,6 +169,37 @@ Para revisar una ejecución, abre **Actions**, selecciona
 la CLI guarda el `submission_id` y consulta
 `GET /v1/submissions/{submission_id}` con la misma API key.
 
+## Operación MLOps
+
+Todos los comandos operativos son `dry-run` por defecto y usan credenciales
+solo desde variables de entorno del servidor:
+
+```bash
+python src/reconcile_submission.py --submission-id ID --dry-run
+python src/ingest.py --status
+python src/ingest.py --dry-run
+python src/evaluate.py --dry-run
+python src/monitor.py --dry-run
+python src/backtest.py
+```
+
+`reconcile_submission.py` consulta por GET el recibo aceptado, exige el payload
+original y verifica las 48 predicciones antes de cualquier upsert. Nunca llama
+al endpoint de creación de submissions. La ingesta conserva cursores, detecta
+repeticiones y escribe por claves naturales; evaluación une estación y timestamp
+exactos; monitoreo emite `healthy`, `warning`, `retrain_recommended` o
+`insufficient_data`.
+
+El backtesting usa tres ventanas expansivas de siete días. Gradient Boosting
+obtuvo accuracy promedio de **86,11 %** (desviación 0,50 pp) y WAPE medio por
+estación de **14,26 %**, superando a los tres baselines en los 12 cruces de fold
+y horizonte. Consulta `reports/backtest_report.md` y
+`docs/retraining-policy.md`.
+
+El workflow manual ofrece `dry-run`, `submit`, `reconcile`, `ingest`, `evaluate`
+y `monitor`; no tiene programación cron. Los modos de escritura son explícitos
+y están protegidos por `concurrency`.
+
 ## Fuente
 
 - API: `https://pulso-transmi.72-60-245-2.sslip.io`
