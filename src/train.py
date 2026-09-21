@@ -13,12 +13,14 @@ from pathlib import Path
 
 import joblib
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
+
+
+from features import FEATURE_COLUMNS, add_origin_features
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +29,6 @@ ARTIFACTS = ROOT / "artifacts"
 TABLES = ROOT / "reports" / "tables"
 FIGURES = ROOT / "reports" / "figures"
 HORIZONS = (1, 2, 3, 4)  # intervalos de 15 minutos
-LAGS = (1, 4, 8, 12, 96, 192, 672)
 
 
 def load_frame() -> pd.DataFrame:
@@ -37,29 +38,6 @@ def load_frame() -> pd.DataFrame:
     context["observed_at"] = pd.to_datetime(context["observed_at"], utc=True)
     frame = observations.merge(context, on="observed_at", how="left", validate="many_to_one")
     return frame.sort_values(["station_id", "observed_at"]).reset_index(drop=True)
-
-
-def add_origin_features(frame: pd.DataFrame) -> pd.DataFrame:
-    data = frame.copy()
-    grouped = data.groupby("station_id", sort=False)["demand"]
-    for lag in LAGS:
-        data[f"lag_{lag}"] = grouped.shift(lag)
-
-    # shift(1) impide que el promedio incluya la demanda del instante objetivo.
-    past = grouped.shift(1)
-    for window in (4, 12, 96):
-        data[f"rolling_mean_{window}"] = (
-            past.groupby(data["station_id"]).rolling(window, min_periods=window).mean()
-            .reset_index(level=0, drop=True)
-        )
-
-    bogota_time = data["observed_at"].dt.tz_convert("America/Bogota")
-    data["hour_sin"] = np.sin(2 * np.pi * (bogota_time.dt.hour * 4 + bogota_time.dt.minute / 15) / 96)
-    data["hour_cos"] = np.cos(2 * np.pi * (bogota_time.dt.hour * 4 + bogota_time.dt.minute / 15) / 96)
-    data["week_sin"] = np.sin(2 * np.pi * bogota_time.dt.dayofweek / 7)
-    data["week_cos"] = np.cos(2 * np.pi * bogota_time.dt.dayofweek / 7)
-    data["is_weekend"] = (bogota_time.dt.dayofweek >= 5).astype(int)
-    return data
 
 
 def mean_station_metrics(frame: pd.DataFrame, prediction_col: str) -> tuple[float, float, float]:
@@ -85,11 +63,7 @@ def train_horizon(data: pd.DataFrame, horizon: int, cutoff: pd.Timestamp) -> tup
     work["baseline_daily"] = grouped.shift(96 - horizon)
     work["baseline_weekly"] = grouped.shift(672 - horizon)
 
-    numeric = [f"lag_{lag}" for lag in LAGS] + [
-        "rolling_mean_4", "rolling_mean_12", "rolling_mean_96",
-        "rain_mm", "rain_forecast", "temperature_c", "temperature_forecast",
-        "event_intensity", "hour_sin", "hour_cos", "week_sin", "week_cos", "is_weekend",
-    ]
+    numeric = FEATURE_COLUMNS[1:]
     required = numeric + ["station_id", "target", "target_at", "baseline_daily", "baseline_weekly"]
     work = work.dropna(subset=required).copy()
     train = work[work["target_at"] < cutoff].copy()

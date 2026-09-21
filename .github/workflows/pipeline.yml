@@ -1,0 +1,56 @@
+name: pulso-transmi-pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Modo seguro de ejecución"
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - submit
+  # Activa el schedule únicamente cuando el profesor publique la frecuencia.
+  # schedule:
+  #   - cron: "7 * * * *"
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Check competition status
+        env:
+          PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
+        run: python src/predict.py --status
+
+      - name: Predict safely
+        env:
+          PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
+          PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        shell: bash
+        run: |
+          if [[ "${{ inputs.mode }}" == "submit" ]]; then
+            python src/predict.py --submit --yes
+          else
+            python src/predict.py --dry-run
+          fi

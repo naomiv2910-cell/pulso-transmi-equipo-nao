@@ -13,7 +13,8 @@ src/               Scripts reproducibles
 
 ## Preparación en Windows PowerShell
 
-Requiere Python 3.11 o superior.
+Requiere Python 3.12. El artefacto champion fue creado con scikit-learn 1.8 y
+debe cargarse con la versión acotada en `requirements.txt`.
 
 ```powershell
 python -m venv .venv
@@ -62,17 +63,10 @@ El esquema de producción contiene nueve tablas:
 
 Las migraciones SQL están en `supabase/migrations/`. Las tablas tienen RLS activo y no exponen acceso directo a `anon` ni `authenticated`. Los procesos administrativos deben ejecutarse desde un servidor o GitHub Actions con la clave de servicio almacenada como secreto.
 
-Para repetir la migración inicial:
-
-```powershell
-Copy-Item .env.example .env
-# Completa .env sin subirlo a Git.
-$env:SUPABASE_URL="https://TU_PROJECT_REF.supabase.co"
-$env:SUPABASE_SERVICE_ROLE_KEY="TU_CLAVE_DE_SERVICIO"
-python src/migrate_supabase.py
-```
-
-La carga usa `upsert`, por lo que repetirla actualiza las filas existentes y no duplica las observaciones.
+La migración inicial ya fue aplicada y no forma parte del pipeline de
+predicción. `src/migrate_supabase.py` se conserva únicamente para un despliegue
+nuevo y deliberado; sus credenciales deben inyectarse desde un gestor de
+secretos, nunca escribirse en el repositorio.
 
 ## Entrenar y comparar modelos
 
@@ -91,6 +85,89 @@ en `reports/tables/`, y la gráfica comparativa en
 Para producción, `artifacts/champion.joblib` contiene en un solo archivo los
 cuatro modelos correspondientes a los horizontes de 15, 30, 45 y 60 minutos,
 junto con sus variables, versiones y métricas de validación.
+
+## Predicción segura y submission
+
+La CLI consulta siempre el reloj y el ciclo autoritativos. Su comportamiento
+predeterminado es `dry-run`: construir, validar y guardar el payload nunca
+implica enviarlo.
+
+```bash
+python src/predict.py --status
+python src/predict.py --dry-run
+python src/predict.py --check-auth
+python src/predict.py --submit
+```
+
+- `--status` valida el OpenAPI actual y muestra reloj y ciclo.
+- `--dry-run` descarga únicamente la historia de las estaciones solicitadas,
+  incorpora el stream incremental, construye las mismas variables del
+  entrenamiento y guarda el JSON en `artifacts/submissions/`.
+- `--check-auth` requiere `PULSO_API_KEY` y consulta `/v1/me` sin mostrar la
+  credencial.
+- `--submit` requiere la API key, muestra el resumen y pide escribir `SUBMIT`
+  inmediatamente antes del POST. En automatización también exige `--yes`.
+
+Si el reloj responde `waiting` o no existe un ciclo abierto, todos los modos de
+estado/predicción terminan correctamente sin enviar nada. Los objetivos,
+timestamps y horizontes proceden exclusivamente de
+`/v1/forecast-cycles/current`; no se inventan valores de competencia.
+
+La `Idempotency-Key` es estable: SHA-256 de ciclo, versión del modelo y commit.
+Repetir exactamente la misma ejecución reutiliza la llave; cambiar cualquiera
+de esos componentes produce otra. Los payloads y recibos locales están
+ignorados por Git y nunca contienen headers de autorización.
+
+### Variables de entorno
+
+Copia `.env.example` solo si necesitas una referencia, pero no confirmes un
+archivo `.env`. Para una sesión local, exporta las variables desde una entrada
+oculta o desde tu gestor de secretos:
+
+```bash
+read -s "PULSO_API_KEY?API key: "
+echo
+export PULSO_API_KEY
+```
+
+La persistencia en Supabase es opcional durante el desarrollo local. Cuando
+`SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` están disponibles, una submission
+aceptada registra la ejecución, ciclo, modelo y predicciones en las tablas ya
+existentes. Si faltan, el `dry-run` continúa con un aviso. La clave
+`service_role` se usa únicamente en procesos de servidor o GitHub Actions,
+nunca en frontend.
+
+### Pruebas
+
+Las solicitudes de los tests están mockeadas y jamás envían predicciones:
+
+```bash
+python -m pytest -q
+```
+
+## GitHub Actions
+
+El workflow manual está en `.github/workflows/pipeline.yml`. En la pestaña
+**Actions**, selecciona **Run workflow** y deja `dry-run` (valor
+predeterminado). `submit` solo debe elegirse después de revisar el ciclo y el
+resumen.
+
+Configura los secretos sin escribir sus valores en archivos o comandos visibles:
+
+```bash
+gh secret set PULSO_API_KEY
+gh secret set SUPABASE_URL
+gh secret set SUPABASE_SERVICE_ROLE_KEY
+```
+
+Cada ejecución instala dependencias, corre las pruebas, consulta el estado y
+ejecuta el modo elegido. Mientras el reloj esté en `waiting`, termina con éxito
+sin POST. No se habilita `schedule` hasta que el profesor publique la frecuencia.
+
+Para revisar una ejecución, abre **Actions**, selecciona
+`pulso-transmi-pipeline` y consulta los pasos. Después de una entrega aceptada,
+la CLI guarda el `submission_id` y consulta
+`GET /v1/submissions/{submission_id}` con la misma API key.
 
 ## Fuente
 

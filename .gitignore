@@ -1,4 +1,5 @@
 .venv/
+.venv*/
 __pycache__/
 *.py[cod]
 .env
@@ -9,3 +10,5 @@ data/raw/*.csv
 data/raw/*.json
 !data/raw/.gitkeep
 
+# Payloads y recibos locales se conservan fuera del control de versiones.
+artifacts/submissions/
