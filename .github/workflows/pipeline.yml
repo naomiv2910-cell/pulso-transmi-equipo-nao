@@ -77,6 +77,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           PULSO_SUBMISSION_PAYLOAD: ${{ secrets.PULSO_SUBMISSION_PAYLOAD }}
+          PULSO_SUBMISSION_RECEIPT: ${{ secrets.PULSO_SUBMISSION_RECEIPT }}
         run: |
           test -n "${{ inputs.submission_id }}"
           python src/reconcile_submission.py --submission-id "${{ inputs.submission_id }}" --persist

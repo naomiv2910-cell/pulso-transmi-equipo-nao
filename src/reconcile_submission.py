@@ -45,7 +45,16 @@ def run(submission_id: str, persist: bool, *, api: APIClient | None = None,
         logger: SupabaseLogger | None = None) -> int:
     owned = api is None
     api = api or APIClient(api_key=os.getenv("PULSO_API_KEY"))
-    try: receipt = api.get_json(f"/v1/submissions/{submission_id}")
+    try:
+        receipt = api.get_json(f"/v1/submissions/{submission_id}")
+    except PredictionError:
+        saved_receipt = os.getenv("PULSO_SUBMISSION_RECEIPT")
+        if not saved_receipt:
+            raise
+        receipt = json.loads(saved_receipt)
+        if receipt.get("submission_id") != submission_id:
+            raise PredictionError("El recibo de respaldo no corresponde al submission_id solicitado")
+        print("GET del recibo no disponible; se usa el recibo oficial aceptado y preservado.")
     finally:
         if owned: api.client.close()
     path, payload = find_payload(receipt["cycle_id"])
