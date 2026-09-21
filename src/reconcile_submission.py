@@ -61,12 +61,27 @@ def run(submission_id: str, persist: bool, *, api: APIClient | None = None,
     logger.start(payload["data_cutoff"], git_commit(), run_type="predict",
         details={"operation": "reconcile", "submission_id": submission_id})
     try:
-        _, _, count = logger.persist_submission(cycle, payload, receipt["received_at"], submission_id=submission_id)
+        cycle_id, model_id, count = logger.persist_submission(cycle, payload, receipt["received_at"], submission_id=submission_id)
+        cycles = logger.select("forecast_cycles", {"select": "id,status", "id": f"eq.{cycle_id}"})
+        models = logger.select("model_versions", {"select": "id,is_champion", "id": f"eq.{model_id}"})
+        predictions = logger.select("predictions", {"select": "station_id,target_at", "cycle_id": f"eq.{cycle_id}",
+                                                    "model_id": f"eq.{model_id}"})
+        logical_keys = {(row["station_id"], row["target_at"]) for row in predictions}
+        if len(cycles) != 1 or cycles[0]["status"] != "submitted":
+            raise PredictionError("La verificación no encontró exactamente el ciclo enviado")
+        if len(models) != 1 or models[0]["is_champion"] is not True:
+            raise PredictionError("La verificación no encontró exactamente el champion")
+        if len(predictions) != 48 or len(logical_keys) != 48:
+            raise PredictionError("La verificación no encontró 48 predicciones lógicas únicas")
         logger.finish("succeeded", count, details={"operation": "reconcile", "submission_id": submission_id,
             "predictions_verified": count, "source": "accepted_receipt_and_original_payload"})
+        completed = logger.select("pipeline_runs", {"select": "status,finished_at", "id": f"eq.{logger.run_id}"})
+        if len(completed) != 1 or completed[0]["status"] != "succeeded" or not completed[0]["finished_at"]:
+            raise PredictionError("El pipeline_run no quedó finalizado correctamente")
     except Exception as exc:
         logger.finish("failed", error=str(exc)[:1000], details={"operation": "reconcile", "submission_id": submission_id})
         raise
+    print("Verificación Supabase: 1 ciclo, 1 champion, 48 predicciones únicas, pipeline succeeded.")
     print("Reconciliación idempotente completada: 48 predicciones."); return 0
 
 def main(argv=None) -> int:
