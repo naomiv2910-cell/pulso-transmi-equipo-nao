@@ -11,6 +11,18 @@ on:
         options:
           - dry-run
           - submit
+          - reconcile
+          - ingest
+          - evaluate
+          - monitor
+      submission_id:
+        description: "ID no secreto requerido por reconcile"
+        required: false
+        type: string
+
+concurrency:
+  group: pulso-transmi-${{ inputs.mode }}-${{ inputs.submission_id || 'default' }}
+  cancel-in-progress: false
   # Activa el schedule únicamente cuando el profesor publique la frecuencia.
   # schedule:
   #   - cron: "7 * * * *"
@@ -37,11 +49,13 @@ jobs:
         run: python -m pytest -q
 
       - name: Check competition status
+        if: inputs.mode == 'dry-run' || inputs.mode == 'submit'
         env:
           PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
         run: python src/predict.py --status
 
       - name: Predict safely
+        if: inputs.mode == 'dry-run' || inputs.mode == 'submit'
         env:
           PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
           PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
@@ -54,3 +68,37 @@ jobs:
           else
             python src/predict.py --dry-run
           fi
+
+      - name: Reconcile accepted submission
+        if: inputs.mode == 'reconcile'
+        env:
+          PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
+          PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          test -n "${{ inputs.submission_id }}"
+          python src/reconcile_submission.py --submission-id "${{ inputs.submission_id }}" --persist
+
+      - name: Incremental ingest
+        if: inputs.mode == 'ingest'
+        env:
+          PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
+          PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python src/ingest.py --persist
+
+      - name: Evaluate predictions
+        if: inputs.mode == 'evaluate'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python src/evaluate.py --persist
+
+      - name: Monitor drift
+        if: inputs.mode == 'monitor'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python src/monitor.py --persist
