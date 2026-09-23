@@ -1,6 +1,8 @@
 name: pulso-transmi-pipeline
 
 on:
+  schedule:
+    - cron: "*/10 * * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -21,11 +23,8 @@ on:
         type: string
 
 concurrency:
-  group: pulso-transmi-${{ inputs.mode }}-${{ inputs.submission_id || 'default' }}
+  group: pulso-transmi-pipeline
   cancel-in-progress: false
-  # Activa el schedule únicamente cuando el profesor publique la frecuencia.
-  # schedule:
-  #   - cron: "7 * * * *"
 
 jobs:
   pipeline:
@@ -49,21 +48,22 @@ jobs:
         run: python -m pytest -q
 
       - name: Check competition status
-        if: inputs.mode == 'dry-run' || inputs.mode == 'submit'
+        if: github.event_name == 'schedule' || inputs.mode == 'dry-run' || inputs.mode == 'submit'
         env:
           PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
         run: python src/predict.py --status
 
       - name: Predict safely
-        if: inputs.mode == 'dry-run' || inputs.mode == 'submit'
+        if: github.event_name == 'schedule' || inputs.mode == 'dry-run' || inputs.mode == 'submit'
         env:
           PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
           PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PULSO_RUN_MODE: ${{ github.event_name == 'schedule' && 'submit' || inputs.mode }}
         shell: bash
         run: |
-          if [[ "${{ inputs.mode }}" == "submit" ]]; then
+          if [[ "$PULSO_RUN_MODE" == "submit" ]]; then
             python src/predict.py --submit --yes
           else
             python src/predict.py --dry-run
@@ -104,3 +104,12 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python src/monitor.py --persist
+
+      - name: Preserve submission payloads and receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: submissions-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/submissions/*.json
+          if-no-files-found: ignore
+          retention-days: 30

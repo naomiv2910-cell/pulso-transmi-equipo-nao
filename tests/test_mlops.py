@@ -49,9 +49,12 @@ def test_zero_new_rows():
 def test_drift_states(state,args):assert classify_drift(*args)==state
 def test_retraining_rule():
     assert recommend_retraining(7,86,80,0);assert not recommend_retraining(6,86,70,3)
-def test_workflow_safe_default_and_no_schedule():
+def test_workflow_manual_dry_run_and_scheduled_submit():
     text=(Path(__file__).parents[1]/".github/workflows/pipeline.yml").read_text()
-    assert "default: dry-run" in text and "  schedule:" not in text
+    assert "default: dry-run" in text and 'cron: "*/10 * * * *"' in text
+    assert "github.event_name == 'schedule' && 'submit' || inputs.mode" in text
+    assert "group: pulso-transmi-pipeline" in text
+    assert "actions/upload-artifact@v4" in text
     assert "reconcile" in text and "--submit --yes" in text
 def test_reconcile_source_contains_no_post_submission():
     text=(Path(__file__).parents[1]/"src/reconcile_submission.py").read_text()

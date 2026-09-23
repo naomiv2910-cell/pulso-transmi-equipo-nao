@@ -147,7 +147,7 @@ python -m pytest -q
 
 ## GitHub Actions
 
-El workflow manual está en `.github/workflows/pipeline.yml`. En la pestaña
+El workflow automático y manual está en `.github/workflows/pipeline.yml`. En la pestaña
 **Actions**, selecciona **Run workflow** y deja `dry-run` (valor
 predeterminado). `submit` solo debe elegirse después de revisar el ciclo y el
 resumen.
@@ -162,7 +162,17 @@ gh secret set SUPABASE_SERVICE_ROLE_KEY
 
 Cada ejecución instala dependencias, corre las pruebas, consulta el estado y
 ejecuta el modo elegido. Mientras el reloj esté en `waiting`, termina con éxito
-sin POST. No se habilita `schedule` hasta que el profesor publique la frecuencia.
+sin POST. El cron consulta cada 10 minutos según la instrucción del profesor.
+Si no hay ciclo abierto (`404 no_open_cycle`), termina en verde. Si ya existe
+un recibo oficial propio, lo conserva y no envía otra vez. Si hay un ciclo sin
+entrega, descarga la historia y el stream reciente, genera exactamente los targets
+publicados y envía con una Idempotency-Key estable por ciclo, modelo y commit.
+Los reintentos aceptan tanto HTTP 201 como el HTTP 200 de una entrega idempotente.
+El recibo se escribe inmediatamente después del POST, antes de otros pasos.
+Los payloads y recibos se conservan como artifacts de Actions durante 30 días,
+incluso si falla un paso posterior. La API key se obtiene únicamente del Secret
+`PULSO_API_KEY`; no se guarda en esos artifacts.
+GitHub puede retrasar las ejecuciones programadas; el cron no garantiza puntualidad.
 
 Para revisar una ejecución, abre **Actions**, selecciona
 `pulso-transmi-pipeline` y consulta los pasos. Después de una entrega aceptada,
@@ -197,8 +207,8 @@ y horizonte. Consulta `reports/backtest_report.md` y
 `docs/retraining-policy.md`.
 
 El workflow manual ofrece `dry-run`, `submit`, `reconcile`, `ingest`, `evaluate`
-y `monitor`; no tiene programación cron. Los modos de escritura son explícitos
-y están protegidos por `concurrency`.
+y `monitor`. Las ejecuciones programadas usan `submit`; todas comparten el
+mismo grupo de `concurrency` para evitar envíos simultáneos.
 
 ## Fuente
 

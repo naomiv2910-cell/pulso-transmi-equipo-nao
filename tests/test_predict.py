@@ -184,14 +184,13 @@ def test_missing_key_only_errors_for_auth_or_submit(monkeypatch: pytest.MonkeyPa
     assert predict.main(["--submit"]) == 2
 
 
-def test_submit_requires_http_201() -> None:
+def test_submit_accepts_idempotent_http_200() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["Idempotency-Key"] == "ptm-stable1"
         return httpx.Response(200, json={"submission_id": "sub_existing"})
 
     with predict.APIClient(api_key="not-printed", transport=httpx.MockTransport(handler)) as api:
-        with pytest.raises(predict.PredictionError, match="HTTP 201"):
-            api.submit({"safe": True}, "ptm-stable1")
+        assert api.submit({"safe": True}, "ptm-stable1")["submission_id"] == "sub_existing"
 
 
 def test_saved_payload_contains_no_api_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -200,3 +199,67 @@ def test_saved_payload_contains_no_api_key(tmp_path: Path, monkeypatch: pytest.M
     path = predict.save_payload(payload)
     assert "PULSO_API_KEY" not in path.read_text()
     json.loads(path.read_text())
+
+
+def test_existing_submission_skips_prediction_and_post(tmp_path, monkeypatch):
+    monkeypatch.setattr(predict, "status", lambda api: ({}, cycle()))
+    monkeypatch.setattr(predict, "SUBMISSION_DIR", tmp_path)
+    class ExistingAPI:
+        def current_submission(self):
+            return {"submission_id": "sub_existing", "status": "accepted"}
+    assert predict.run_prediction(ExistingAPI(), submit=True, assume_yes=True) == 0
+    assert json.loads((tmp_path / "receipt-sub_existing.json").read_text())["status"] == "accepted"
+
+
+@pytest.mark.parametrize("code", ["no_submission_for_cycle", "no_open_cycle"])
+def test_expected_missing_receipt(code):
+    with predict.APIClient(transport=httpx.MockTransport(
+        lambda request: httpx.Response(404, json={"detail": {"code": code}})
+    )) as api:
+        assert api.current_submission() is None
+
+
+def test_unknown_404_fails():
+    with predict.APIClient(transport=httpx.MockTransport(
+        lambda request: httpx.Response(404, json={"detail": {"code": "unexpected"}})
+    )) as api:
+        with pytest.raises(predict.PredictionError):
+            api.current_cycle()
+        with pytest.raises(predict.PredictionError):
+            api.current_submission()
+
+
+def test_post_retry_keeps_payload_and_idempotency_key(monkeypatch):
+    calls = []
+    monkeypatch.setattr(predict.time, "sleep", lambda seconds: None)
+    def handler(request):
+        calls.append((request.headers["Idempotency-Key"], request.content))
+        return httpx.Response(503 if len(calls) == 1 else 200,
+                              json={"submission_id": "sub_replayed"})
+    with predict.APIClient(transport=httpx.MockTransport(handler)) as api:
+        assert api.submit({"test": 1}, "stable-key")["submission_id"] == "sub_replayed"
+    assert len(calls) == 2
+    assert calls[0] == calls[1]
+
+
+def test_receipt_survives_followup_failure(tmp_path, monkeypatch):
+    contract = cycle()
+    artifact = {"created_at": "2026-09-18T22:48:01Z", "models": {
+        h: {"trained_until": "2026-09-02T05:00:00Z"} for h in (15, 30, 45, 60)}}
+    monkeypatch.setattr(predict, "status", lambda api: ({}, contract))
+    monkeypatch.setattr(predict, "git_commit", lambda: "a" * 40)
+    monkeypatch.setattr(predict, "load_champion", lambda: artifact)
+    monkeypatch.setattr(predict, "download_history", lambda *args: (None, None))
+    monkeypatch.setattr(predict, "build_target_features", lambda *args: None)
+    monkeypatch.setattr(predict, "predict_targets", lambda *args: predictions_for(contract))
+    monkeypatch.setattr(predict, "SUBMISSION_DIR", tmp_path)
+    monkeypatch.setattr(predict, "ROOT", tmp_path)
+    monkeypatch.setenv("PULSO_API_KEY", "test-key")
+    monkeypatch.delenv("SUPABASE_URL", raising=False)
+    class AcceptedAPI:
+        def current_submission(self): return None
+        def submit(self, *args): return {"submission_id": "sub_accepted", "status": "accepted"}
+        def get_json(self, *args): raise predict.PredictionError("follow-up unavailable")
+    with pytest.raises(predict.PredictionError, match="follow-up"):
+        predict.run_prediction(AcceptedAPI(), submit=True, assume_yes=True)
+    assert json.loads((tmp_path / "receipt-sub_accepted.json").read_text())["status"] == "accepted"

@@ -111,9 +111,18 @@ class APIClient:
 
     def current_cycle(self) -> dict[str, Any] | None:
         response = self.request("GET", "/v1/forecast-cycles/current")
-        if response.status_code == 404:
+        if response.status_code == 404 and response.json().get("detail", {}).get("code") == "no_open_cycle":
             return None
         self._raise(response, "consulta del ciclo")
+        return response.json()
+
+    def current_submission(self) -> dict[str, Any] | None:
+        response = self.request("GET", "/v1/submissions/current")
+        if response.status_code == 404:
+            code = response.json().get("detail", {}).get("code")
+            if code in {"no_submission_for_cycle", "no_open_cycle"}:
+                return None
+        self._raise(response, "consulta del recibo actual")
         return response.json()
 
     def submit(self, payload: dict[str, Any], idempotency_key: str) -> dict[str, Any]:
@@ -124,9 +133,9 @@ class APIClient:
             json=payload,
         )
         self._raise(response, "submission")
-        if response.status_code != 201:
+        if response.status_code not in {200, 201}:
             raise PredictionError(
-                f"Se esperaba HTTP 201 para una entrega nueva y se recibió {response.status_code}"
+                f"Se esperaba HTTP 200 o 201 para una entrega y se recibió {response.status_code}"
             )
         return response.json()
 
@@ -328,6 +337,15 @@ def save_payload(payload: dict[str, Any]) -> Path:
     return path
 
 
+def save_receipt(receipt: dict[str, Any]) -> Path:
+    SUBMISSION_DIR.mkdir(parents=True, exist_ok=True)
+    submission_id = str(receipt["submission_id"])
+    safe_id = "".join(c if c.isalnum() or c in "-_" else "_" for c in submission_id)
+    path = SUBMISSION_DIR / f"receipt-{safe_id}.json"
+    path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
 def print_summary(payload: dict[str, Any], cycle: dict[str, Any]) -> None:
     values = [item["value"] for item in payload["predictions"]]
     horizons = sorted({int(item["horizon_minutes"]) for item in cycle["targets"]})
@@ -362,6 +380,12 @@ def run_prediction(api: APIClient, *, submit: bool, assume_yes: bool) -> int:
     _, cycle = status(api)
     if cycle is None:
         return 0
+    if submit:
+        existing = api.current_submission()
+        if existing:
+            save_receipt(existing)
+            print("El ciclo abierto ya tiene una entrega oficial; no se realiza otro POST.")
+            return 0
     commit = git_commit()
     logger = SupabaseLogger()
     logger.start(cycle["data_cutoff"], commit)
@@ -396,11 +420,9 @@ def run_prediction(api: APIClient, *, submit: bool, assume_yes: bool) -> int:
 
         receipt = api.submit(payload, idempotency_key)
         submission_id = receipt["submission_id"]
+        receipt_path = save_receipt(receipt)
         receipt_response = api.get_json(f"/v1/submissions/{submission_id}")
-        receipt_path = SUBMISSION_DIR / f"receipt-{submission_id}.json"
-        receipt_path.write_text(
-            json.dumps(receipt_response, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+        receipt_path = save_receipt(receipt_response)
         submitted_at = receipt.get("received_at", datetime.now(timezone.utc).isoformat())
         logger.persist_submission(cycle, payload, submitted_at)
         logger.finish("succeeded", len(predictions))
