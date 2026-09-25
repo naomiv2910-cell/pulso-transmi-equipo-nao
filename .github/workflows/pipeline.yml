@@ -1,8 +1,6 @@
 name: pulso-transmi-pipeline
 
 on:
-  schedule:
-    - cron: "3-59/10 * * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -47,20 +45,27 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+      - name: Restore submission journal
+        uses: actions/cache/restore@v4
+        with:
+          path: artifacts/submissions
+          key: pulso-submissions-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: pulso-submissions-v1-
+
       - name: Check competition status
-        if: github.event_name == 'schedule' || inputs.mode == 'dry-run' || inputs.mode == 'submit'
+        if: inputs.mode == 'dry-run' || inputs.mode == 'submit'
         env:
           PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
         run: python src/predict.py --status
 
       - name: Predict safely
-        if: github.event_name == 'schedule' || inputs.mode == 'dry-run' || inputs.mode == 'submit'
+        if: inputs.mode == 'dry-run' || inputs.mode == 'submit'
         env:
           PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
           PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          PULSO_RUN_MODE: ${{ github.event_name == 'schedule' && 'submit' || inputs.mode }}
+          PULSO_RUN_MODE: ${{ inputs.mode }}
         shell: bash
         run: |
           if [[ "$PULSO_RUN_MODE" == "submit" ]]; then
@@ -104,6 +109,13 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python src/monitor.py --persist
+
+      - name: Save submission journal
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: artifacts/submissions
+          key: pulso-submissions-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Preserve submission payloads and receipts
         if: always()

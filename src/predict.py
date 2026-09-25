@@ -353,6 +353,34 @@ def save_receipt(receipt: dict[str, Any]) -> Path:
     return path
 
 
+def cycle_state_path(cycle_id: str, kind: str) -> Path:
+    digest = hashlib.sha256(cycle_id.encode()).hexdigest()
+    return SUBMISSION_DIR / f"{kind}-{digest}.json"
+
+
+def write_state(path: Path, value: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(".tmp")
+    temporary.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+    temporary.replace(path)
+
+
+def accepted_cycle(cycle_id: str) -> bool:
+    path = cycle_state_path(cycle_id, "accepted")
+    if not path.exists():
+        return False
+    state = json.loads(path.read_text(encoding="utf-8"))
+    return state.get("cycle_id") == cycle_id and bool(state.get("submission_id"))
+
+
+def remember_acceptance(cycle_id: str, receipt: dict[str, Any]) -> None:
+    receipt_cycle = receipt.get("validated_contract", {}).get("cycle_id", cycle_id)
+    if receipt_cycle != cycle_id:
+        raise PredictionError("El recibo corresponde a otro ciclo")
+    write_state(cycle_state_path(cycle_id, "accepted"), {
+        "cycle_id": cycle_id, "submission_id": receipt["submission_id"]})
+
+
 def print_summary(payload: dict[str, Any], cycle: dict[str, Any]) -> None:
     values = [item["value"] for item in payload["predictions"]]
     horizons = sorted({int(item["horizon_minutes"]) for item in cycle["targets"]})
@@ -388,22 +416,36 @@ def run_prediction(api: APIClient, *, submit: bool, assume_yes: bool) -> int:
     if cycle is None:
         return 0
     if submit:
+        if accepted_cycle(cycle["cycle_id"]):
+            print("Recibo local confirmado; no se repite la entrega del ciclo.")
+            return 0
         existing = api.current_submission()
         if existing:
             save_receipt(existing)
+            remember_acceptance(cycle["cycle_id"], existing)
             print("El ciclo abierto ya tiene una entrega oficial; no se realiza otro POST.")
             return 0
     commit = git_commit()
     logger = SupabaseLogger()
     logger.start(cycle["data_cutoff"], commit)
     try:
-        artifact = load_champion()
-        observations, context = download_history(api, cycle)
-        features = build_target_features(
-            observations, context, cycle["targets"], cycle["data_cutoff"]
-        )
-        predictions = predict_targets(artifact, features)
-        payload, idempotency_key = build_payload(cycle, artifact, predictions, commit)
+        pending_path = cycle_state_path(cycle["cycle_id"], "pending")
+        if submit and pending_path.exists():
+            pending = json.loads(pending_path.read_text(encoding="utf-8"))
+            payload, idempotency_key = pending["payload"], pending["idempotency_key"]
+            if payload["cycle_id"] != cycle["cycle_id"] or payload["data_cutoff"] != cycle["data_cutoff"]:
+                raise PredictionError("El payload pendiente no corresponde al ciclo")
+            predictions = payload["predictions"]
+            validate_predictions(predictions, cycle)
+            print("Reutilizando exactamente el payload y la llave del intento pendiente.")
+        else:
+            artifact = load_champion()
+            observations, context = download_history(api, cycle)
+            features = build_target_features(
+                observations, context, cycle["targets"], cycle["data_cutoff"]
+            )
+            predictions = predict_targets(artifact, features)
+            payload, idempotency_key = build_payload(cycle, artifact, predictions, commit)
         path = save_payload(payload)
         print_summary(payload, cycle)
         print(f"Payload de prueba: {path.relative_to(ROOT)}")
@@ -425,9 +467,12 @@ def run_prediction(api: APIClient, *, submit: bool, assume_yes: bool) -> int:
                 print("Envío cancelado; no se realizó ningún POST.")
                 return 0
 
+        write_state(pending_path, {"payload": payload, "idempotency_key": idempotency_key})
         receipt = api.submit(payload, idempotency_key)
         submission_id = receipt["submission_id"]
         receipt_path = save_receipt(receipt)
+        remember_acceptance(cycle["cycle_id"], receipt)
+        print(f"Submission aceptada por la API: {submission_id}", flush=True)
         receipt_response = api.get_json(f"/v1/submissions/{submission_id}")
         receipt_path = save_receipt(receipt_response)
         submitted_at = receipt.get("received_at", datetime.now(timezone.utc).isoformat())

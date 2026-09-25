@@ -147,37 +147,43 @@ python -m pytest -q
 
 ## GitHub Actions
 
-El workflow automático y manual está en `.github/workflows/pipeline.yml`. En la pestaña
-**Actions**, selecciona **Run workflow** y deja `dry-run` (valor
-predeterminado). `submit` solo debe elegirse después de revisar el ciclo y el
-resumen.
+`watch-cycles.yml` mantiene la vigilancia en la nube: consulta el ciclo cada
+60 segundos mientras el runner está activo. Cuando aparece un ciclo pendiente,
+ejecuta la inferencia y entrega sus targets exactos. No requiere mantener el Mac
+encendido. La inferencia tarda más que una consulta; no es un envío instantáneo
+al segundo exacto de apertura.
 
-Configura los secretos sin escribir sus valores en archivos o comandos visibles:
+Cada turno dura 45 minutos y, al terminar, activa el siguiente mediante
+`workflow_dispatch` con el token temporal del propio repositorio y permiso
+`actions: write`. Un cron cada 10 minutos queda como respaldo. Todos los workflows
+comparten `concurrency` para evitar entregas simultáneas. Las colas de GitHub,
+caídas de la API o un fallo de renovación aún pueden producir huecos: no hay una
+garantía absoluta de disponibilidad. Revisar recibos y cobertura, no solo checks.
 
-```bash
-gh secret set PULSO_API_KEY
-gh secret set SUPABASE_URL
-gh secret set SUPABASE_SERVICE_ROLE_KEY
-```
+La clave `PULSO_API_KEY` sigue únicamente en Actions Secrets, junto con
+`SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. El token de renovación solo se
+expone al paso que activa el siguiente workflow.
 
-Cada ejecución instala dependencias, corre las pruebas, consulta el estado y
-ejecuta el modo elegido. Mientras el reloj esté en `waiting`, termina con éxito
-sin POST. El cron consulta cada 10 minutos según la instrucción del profesor.
-Si no hay ciclo abierto (`404 no_open_cycle`), termina en verde. Si ya existe
-un recibo oficial propio, lo conserva y no envía otra vez. Si hay un ciclo sin
-entrega, descarga la historia y el stream reciente, genera exactamente los targets
-publicados y envía con una Idempotency-Key estable por ciclo, modelo y commit.
-Los reintentos aceptan tanto HTTP 201 como el HTTP 200 de una entrega idempotente.
-El recibo se escribe inmediatamente después del POST, antes de otros pasos.
-Los payloads y recibos se conservan como artifacts de Actions durante 30 días,
-incluso si falla un paso posterior. La API key se obtiene únicamente del Secret
-`PULSO_API_KEY`; no se guarda en esos artifacts.
-GitHub puede retrasar las ejecuciones programadas; el cron no garantiza puntualidad.
+Se guardan el payload pendiente, su clave idempotente, el recibo y una marca de
+aceptación por ciclo. Los reintentos reutilizan exactamente el payload pendiente,
+incluso después de un cambio de commit. La aceptación se registra antes de
+persistir métricas, para no repetir un envío si falla ese paso posterior. El diario
+se transfiere entre runners mediante Actions cache y se respalda en artifacts.
+Una caché expulsada puede obligar a usar la protección idempotente del servidor.
+No hay credenciales en el diario.
 
-Para revisar una ejecución, abre **Actions**, selecciona
-`pulso-transmi-pipeline` y consulta los pasos. Después de una entrega aceptada,
-la CLI guarda el `submission_id` y consulta
-`GET /v1/submissions/{submission_id}` con la misma API key.
+Para iniciar: **Actions → Vigilancia continua de ciclos → Run workflow**.
+El input `minutes` permite un primer turno corto para verificar la renovación;
+los siguientes duran 45 minutos. Para detenerlo, establecer la variable de
+repositorio `PULSO_WATCH_ENABLED=false` y cancelar la ejecución activa. El cierre
+predeterminado es el 30 de septiembre de 2026 a medianoche de Bogotá
+(`2026-10-01T05:00:00Z`); `PULSO_WATCH_UNTIL` permite cambiarlo si el profesor
+extiende la competencia. Deshabilitar el workflow al terminar para quitar el cron.
+
+`pipeline.yml` conserva los modos manuales `dry-run`, `submit`, `reconcile`,
+`ingest`, `evaluate` y `monitor`. El valor predeterminado sigue siendo `dry-run`.
+Comparte el diario y la exclusión mutua con el watcher; una ejecución manual puede
+esperar a que termine el turno activo.
 
 ## Operación MLOps
 
@@ -207,7 +213,7 @@ y horizonte. Consulta `reports/backtest_report.md` y
 `docs/retraining-policy.md`.
 
 El workflow manual ofrece `dry-run`, `submit`, `reconcile`, `ingest`, `evaluate`
-y `monitor`. Las ejecuciones programadas usan `submit`; todas comparten el
+y `monitor`. El watcher automático usa `submit`; todas las ejecuciones comparten el
 mismo grupo de `concurrency` para evitar envíos simultáneos.
 
 ## Fuente
@@ -224,10 +230,9 @@ La demanda, el clima y los eventos del conjunto inicial son sintéticos. Los nom
 El despliegue público puede carecer de `GET /v1/submissions/current`, aunque
 la guía lo documente. Si devuelve `submission_not_found`, el cliente confirma
 la ausencia de esa ruta en OpenAPI antes de continuar con la llave idempotente
-estable. Otros errores no se ignoran. Con esa versión antigua, los reintentos
-del mismo ciclo, modelo y commit reutilizan la llave; no cambies el commit a
-mitad de un ciclo ya entregado para evitar un intento nuevo.
+estable. Otros errores no se ignoran. El diario conserva las entregas aceptadas
+y los payloads pendientes entre los turnos del watcher.
 
-El cron corre en los minutos 3, 13, 23, 33, 43 y 53 para evitar el inicio de hora.
+El cron de respaldo corre en los minutos 3, 13, 23, 33, 43 y 53.
 GitHub no garantiza la frecuencia efectiva: verifica los horarios en Actions y
 los recibos, no solo el check verde. Un run sin ciclo abierto no es una entrega.

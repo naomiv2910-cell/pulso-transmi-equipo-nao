@@ -281,3 +281,49 @@ def test_legacy_receipt_route_requires_confirmed_missing_capability(supports_cur
                 api.current_submission()
         else:
             assert api.current_submission() is None
+
+
+def test_saved_acceptance_skips_even_when_remote_lookup_unavailable(tmp_path, monkeypatch):
+    contract = cycle()
+    monkeypatch.setattr(predict, 'SUBMISSION_DIR', tmp_path)
+    monkeypatch.setattr(predict, 'status', lambda api: ({}, contract))
+    predict.remember_acceptance(contract['cycle_id'], {'submission_id': 'sub_ok'})
+    assert predict.run_prediction(object(), submit=True, assume_yes=True) == 0
+
+
+def test_pending_payload_survives_timeout_and_code_change(tmp_path, monkeypatch):
+    contract = cycle()
+    artifact = {'created_at': '2026-09-18T22:48:01Z', 'models': {
+        h: {'trained_until': '2026-09-02T05:00:00Z'} for h in (15, 30, 45, 60)}}
+    monkeypatch.setattr(predict, 'status', lambda api: ({}, contract))
+    monkeypatch.setattr(predict, 'git_commit', lambda: 'a' * 40)
+    monkeypatch.setattr(predict, 'load_champion', lambda: artifact)
+    monkeypatch.setattr(predict, 'download_history', lambda *args: (None, None))
+    monkeypatch.setattr(predict, 'build_target_features', lambda *args: None)
+    monkeypatch.setattr(predict, 'predict_targets', lambda *args: predictions_for(contract))
+    monkeypatch.setattr(predict, 'SUBMISSION_DIR', tmp_path)
+    monkeypatch.setattr(predict, 'ROOT', tmp_path)
+    monkeypatch.setenv('PULSO_API_KEY', 'test-key')
+    class Logger:
+        def start(self, *args): pass
+        def finish(self, *args, **kwargs): pass
+        def persist_submission(self, *args): pass
+    monkeypatch.setattr(predict, 'SupabaseLogger', Logger)
+    class API:
+        calls = []
+        def current_submission(self): return None
+        def submit(self, payload, key):
+            self.calls.append((payload, key))
+            if len(self.calls) == 1: raise predict.PredictionError('timeout')
+            return {'submission_id': 'sub_ok'}
+        def get_json(self, path): return {'submission_id': 'sub_ok'}
+    api = API()
+    with pytest.raises(predict.PredictionError, match='timeout'):
+        predict.run_prediction(api, submit=True, assume_yes=True)
+    monkeypatch.setattr(predict, 'git_commit', lambda: 'b' * 40)
+    monkeypatch.setattr(predict, 'load_champion', lambda: pytest.fail('Must reuse pending payload'))
+    assert predict.run_prediction(api, submit=True, assume_yes=True) == 0
+    assert api.calls[0] == api.calls[1]
+    assert predict.accepted_cycle(contract['cycle_id'])
+    assert predict.run_prediction(api, submit=True, assume_yes=True) == 0
+    assert len(api.calls) == 2

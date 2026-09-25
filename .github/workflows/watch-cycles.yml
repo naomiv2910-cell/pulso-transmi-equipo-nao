@@ -1,0 +1,87 @@
+name: Vigilancia continua de ciclos
+
+on:
+  schedule:
+    - cron: "3-59/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: Duración del primer turno (1 a 45 minutos)
+        default: '45'
+        required: true
+        type: string
+
+concurrency:
+  group: pulso-transmi-pipeline
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    if: vars.PULSO_WATCH_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    permissions:
+      contents: read
+      actions: write
+    env:
+      WATCH_UNTIL: ${{ vars.PULSO_WATCH_UNTIL || '2026-10-01T05:00:00Z' }}
+    steps:
+      - name: Check end of competition
+        id: window
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime, timezone
+          until = datetime.fromisoformat(os.environ['WATCH_UNTIL'].replace('Z', '+00:00'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('active=' + str(datetime.now(timezone.utc) < until).lower() + '\n')
+          PY
+      - uses: actions/checkout@v4
+        if: steps.window.outputs.active == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.window.outputs.active == 'true'
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install and test
+        if: steps.window.outputs.active == 'true'
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pytest -q
+      - name: Restore submission journal
+        if: steps.window.outputs.active == 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: artifacts/submissions
+          key: pulso-submissions-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: pulso-submissions-v1-
+      - name: Watch and submit new cycles
+        if: steps.window.outputs.active == 'true'
+        id: watcher
+        env:
+          WATCH_MINUTES: ${{ inputs.minutes || '45' }}
+          PULSO_API_KEY: ${{ secrets.PULSO_API_KEY }}
+          PULSO_API_BASE_URL: https://pulso-transmi.72-60-245-2.sslip.io
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PULSO_HTTP_TIMEOUT: '15'
+        run: python -u src/watch_cycles.py --minutes "$WATCH_MINUTES" --until "$WATCH_UNTIL"
+      - name: Save submission journal
+        if: always() && steps.window.outputs.active == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: artifacts/submissions
+          key: pulso-submissions-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Preserve receipts
+        if: always() && steps.window.outputs.active == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: submissions-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/submissions/*.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Start next watcher without waiting for cron
+        if: always() && !cancelled() && steps.watcher.outputs.renew == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run watch-cycles.yml --ref main -f minutes=45
