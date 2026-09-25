@@ -80,6 +80,12 @@ jobs:
           path: artifacts/submissions/*.json
           if-no-files-found: ignore
           retention-days: 7
+      - name: Refresh drift dashboard independently
+        if: always() && !cancelled() && steps.watcher.outputs.renew == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run analytics.yml --ref main
       - name: Start next watcher without waiting for cron
         if: always() && !cancelled() && steps.watcher.outputs.renew == 'true'
         env:

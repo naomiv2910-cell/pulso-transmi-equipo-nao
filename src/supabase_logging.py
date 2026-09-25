@@ -31,6 +31,18 @@ class SupabaseLogger:
 
     def select(self, table: str, params: dict[str, str]) -> list[dict[str, Any]]:
         return self.request("GET", table, params=params)
+    def select_all(self, table: str, params: dict[str, str], page_size: int = 1000) -> list[dict[str, Any]]:
+        if "order" not in params:
+            raise ValueError("La paginación requiere un orden estable")
+        rows: list[dict[str, Any]] = []
+        offset = 0
+        while True:
+            page = self.select(table, {**params, "limit": str(page_size), "offset": str(offset)})
+            if not page:
+                return rows
+            rows.extend(page)
+            offset += len(page)
+
     def upsert(self, table: str, payload: Any, conflict: str, *, representation: bool = True) -> list[dict[str, Any]]:
         returned = "representation" if representation else "minimal"
         return self.request("POST", table, params={"on_conflict": conflict}, payload=payload,

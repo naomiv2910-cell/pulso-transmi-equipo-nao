@@ -7,7 +7,7 @@ from predict import APIClient, PredictionError, git_commit
 from supabase_logging import SupabaseLogger
 
 def fetch_incremental(api: APIClient, path: str, params: dict[str, Any]) -> tuple[list[dict], str | None]:
-    rows=[]; cursor=None; seen=set()
+    rows=[]; cursor=params.get("cursor"); seen=set()
     while True:
         query={**params, "limit": 5000}
         if cursor: query["cursor"]=cursor
@@ -30,7 +30,10 @@ def run(mode: str, *, api: APIClient | None=None, logger: SupabaseLogger | None=
             cutoff=latest(logger,"observations") if logger.enabled else None
             print(f"Reloj: {clock.get('state','desconocido')} | último dato: {cutoff or 'sin consultar'}"); return 0
         cutoff=latest(logger,"observations") if logger.enabled else None
-        params={"after":cutoff} if cutoff else {}
+        previous = logger.select("pipeline_runs", {"select":"details", "run_type":"eq.ingest",
+            "status":"eq.succeeded", "order":"started_at.desc", "limit":"1"}) if logger.enabled else []
+        saved_cursor = previous[0].get("details", {}).get("final_cursor") if previous else None
+        params = {"cursor": saved_cursor} if saved_cursor else {}
         observations,cursor=fetch_incremental(api,"/v1/stream/observations",params)
         observations=list({(x["station_id"],x["observed_at"]):x for x in observations}.values())
         end=max((x["observed_at"] for x in observations),default=cutoff)
@@ -43,7 +46,8 @@ def run(mode: str, *, api: APIClient | None=None, logger: SupabaseLogger | None=
         if mode!="persist": print("Dry-run completado; no se escribió en Supabase."); return 0
         logger.start(end,git_commit(),run_type="ingest",details=details)
         try:
-            if observations: logger.upsert("observations",observations,"station_id,observed_at",representation=False)
+            for offset in range(0, len(observations), 1000):
+                logger.upsert("observations",observations[offset:offset+1000],"station_id,observed_at",representation=False)
             if context: logger.upsert("context_observations",context,"observed_at",representation=False)
             logger.finish("succeeded",len(observations)+len(context),details=details)
         except Exception as exc: logger.finish("failed",error=str(exc)[:1000],details=details); raise
