@@ -217,3 +217,17 @@ mismo grupo de `concurrency` para evitar envíos simultáneos.
 - SDK oficial: `https://github.com/uexternadojz/pulso-transmi-sdk`
 
 La demanda, el clima y los eventos del conjunto inicial son sintéticos. Los nombres y coordenadas de estaciones provienen de datos oficiales de TransMilenio, según los metadatos del SDK.
+
+
+### Compatibilidad de la API y frecuencia efectiva
+
+El despliegue público puede carecer de `GET /v1/submissions/current`, aunque
+la guía lo documente. Si devuelve `submission_not_found`, el cliente confirma
+la ausencia de esa ruta en OpenAPI antes de continuar con la llave idempotente
+estable. Otros errores no se ignoran. Con esa versión antigua, los reintentos
+del mismo ciclo, modelo y commit reutilizan la llave; no cambies el commit a
+mitad de un ciclo ya entregado para evitar un intento nuevo.
+
+El cron corre en los minutos 3, 13, 23, 33, 43 y 53 para evitar el inicio de hora.
+GitHub no garantiza la frecuencia efectiva: verifica los horarios en Actions y
+los recibos, no solo el check verde. Un run sin ciclo abierto no es una entrega.

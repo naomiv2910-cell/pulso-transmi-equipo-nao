@@ -122,6 +122,13 @@ class APIClient:
             code = response.json().get("detail", {}).get("code")
             if code in {"no_submission_for_cycle", "no_open_cycle"}:
                 return None
+            if code == "submission_not_found":
+                # Older deployments route "current" to /submissions/{submission_id}.
+                # Confirm the missing capability rather than swallowing every 404.
+                document = self.get_json("/openapi.json")
+                if "get" not in document.get("paths", {}).get("/v1/submissions/current", {}):
+                    print("API sin consulta de recibo actual; se usa Idempotency-Key estable.")
+                    return None
         self._raise(response, "consulta del recibo actual")
         return response.json()
 

@@ -263,3 +263,21 @@ def test_receipt_survives_followup_failure(tmp_path, monkeypatch):
     with pytest.raises(predict.PredictionError, match="follow-up"):
         predict.run_prediction(AcceptedAPI(), submit=True, assume_yes=True)
     assert json.loads((tmp_path / "receipt-sub_accepted.json").read_text())["status"] == "accepted"
+
+
+@pytest.mark.parametrize("supports_current", [False, True])
+def test_legacy_receipt_route_requires_confirmed_missing_capability(supports_current):
+    def handler(request):
+        if request.url.path == "/v1/submissions/current":
+            return httpx.Response(404, json={"detail": {"code": "submission_not_found"}})
+        assert request.url.path == "/openapi.json"
+        paths = {"/v1/submissions/{submission_id}": {"get": {}}}
+        if supports_current:
+            paths["/v1/submissions/current"] = {"get": {}}
+        return httpx.Response(200, json={"paths": paths})
+    with predict.APIClient(transport=httpx.MockTransport(handler)) as api:
+        if supports_current:
+            with pytest.raises(predict.PredictionError, match="submission_not_found"):
+                api.current_submission()
+        else:
+            assert api.current_submission() is None
