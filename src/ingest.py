@@ -35,7 +35,7 @@ def run(mode: str, *, api: APIClient | None=None, logger: SupabaseLogger | None=
         saved_cursor = previous[0].get("details", {}).get("final_cursor") if previous else None
         params = {"cursor": saved_cursor} if saved_cursor else {}
         observations,cursor=fetch_incremental(api,"/v1/stream/observations",params)
-        observations=list({(x["station_id"],x["observed_at"]):x for x in observations}.values())
+        observations=list({(x["station_id"],x["observed_at"]):{k:x[k] for k in ("station_id","observed_at","demand")} for x in observations}.values())
         end=max((x["observed_at"] for x in observations),default=cutoff)
         context=[]
         if observations: context,_=fetch_incremental(api,"/v1/context",{"start":cutoff or min(x["observed_at"] for x in observations),"end":end})
