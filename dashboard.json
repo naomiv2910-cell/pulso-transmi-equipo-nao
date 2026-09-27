@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T22:50:51.163598+00:00",
+  "generated_at": "2026-09-27T23:36:35.166790+00:00",
   "observations": {
-    "count": 59100,
-    "last_at": "2026-09-15T12:00:00+00:00"
+    "count": 59124,
+    "last_at": "2026-09-15T12:30:00+00:00"
   },
   "model": {
     "version": "champion-1.0.0",
@@ -12,8 +12,8 @@
   },
   "drift": {
     "status": "high",
-    "window_start": "2026-09-14T12:00:00+00:00",
-    "window_end": "2026-09-15T12:00:00+00:00",
+    "window_start": "2026-09-14T12:30:00+00:00",
+    "window_end": "2026-09-15T12:30:00+00:00",
     "reference_start": "2026-07-26T05:00:00+00:00",
     "reference_end": "2026-09-02T05:00:00+00:00",
     "stations": [
@@ -22,11 +22,11 @@
         "name": "Calle 100 - Marketmedios",
         "reference_samples": 3649,
         "recent_samples": 96,
-        "status": "stable",
-        "psi": 0.1964,
-        "mean_shift": 0.1171,
+        "status": "warning",
+        "psi": 0.2132,
+        "mean_shift": 0.1335,
         "reference_mean": 292.02,
-        "recent_mean": 359.67
+        "recent_mean": 362.36
       },
       {
         "station_id": "03000",
@@ -34,10 +34,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "warning",
-        "psi": 0.2487,
-        "mean_shift": 0.5738,
+        "psi": 0.2575,
+        "mean_shift": 0.5996,
         "reference_mean": 257.15,
-        "recent_mean": 299.97
+        "recent_mean": 303.06
       },
       {
         "station_id": "05000",
@@ -45,10 +45,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "high",
-        "psi": 0.7965,
-        "mean_shift": 0.7718,
+        "psi": 0.8447,
+        "mean_shift": 0.7923,
         "reference_mean": 341.48,
-        "recent_mean": 382.49
+        "recent_mean": 384.46
       },
       {
         "station_id": "05100",
@@ -57,9 +57,9 @@
         "recent_samples": 96,
         "status": "high",
         "psi": 7.5709,
-        "mean_shift": 3.5378,
+        "mean_shift": 3.521,
         "reference_mean": 589.12,
-        "recent_mean": 269.11
+        "recent_mean": 266.22
       },
       {
         "station_id": "06000",
@@ -67,10 +67,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "high",
-        "psi": 1.3325,
-        "mean_shift": 1.3676,
+        "psi": 1.282,
+        "mean_shift": 1.3254,
         "reference_mean": 510.2,
-        "recent_mean": 670.91
+        "recent_mean": 666.71
       },
       {
         "station_id": "06111",
@@ -78,10 +78,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "high",
-        "psi": 0.7912,
-        "mean_shift": 1.0721,
+        "psi": 0.7937,
+        "mean_shift": 1.0743,
         "reference_mean": 237.65,
-        "recent_mean": 321.47
+        "recent_mean": 321.75
       },
       {
         "station_id": "07105",
@@ -89,10 +89,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "stable",
-        "psi": 0.1314,
-        "mean_shift": 0.0831,
+        "psi": 0.1233,
+        "mean_shift": 0.0887,
         "reference_mean": 271.93,
-        "recent_mean": 284.41
+        "recent_mean": 284.5
       },
       {
         "station_id": "07107",
@@ -100,10 +100,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "high",
-        "psi": 1.3231,
-        "mean_shift": 1.3909,
+        "psi": 1.2673,
+        "mean_shift": 1.3522,
         "reference_mean": 278.96,
-        "recent_mean": 382.51
+        "recent_mean": 380.0
       },
       {
         "station_id": "07111",
@@ -112,9 +112,9 @@
         "recent_samples": 96,
         "status": "high",
         "psi": 2.5981,
-        "mean_shift": 3.3054,
+        "mean_shift": 3.27,
         "reference_mean": 681.97,
-        "recent_mean": 1042.35
+        "recent_mean": 1038.33
       },
       {
         "station_id": "09000",
@@ -122,10 +122,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "high",
-        "psi": 0.5463,
-        "mean_shift": 0.7089,
+        "psi": 0.5409,
+        "mean_shift": 0.6914,
         "reference_mean": 216.81,
-        "recent_mean": 251.35
+        "recent_mean": 249.6
       },
       {
         "station_id": "09122",
@@ -133,10 +133,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "high",
-        "psi": 1.1974,
-        "mean_shift": 1.1974,
+        "psi": 1.1582,
+        "mean_shift": 1.2197,
         "reference_mean": 248.9,
-        "recent_mean": 352.45
+        "recent_mean": 355.45
       },
       {
         "station_id": "10009",
@@ -144,10 +144,10 @@
         "reference_samples": 3649,
         "recent_samples": 96,
         "status": "stable",
-        "psi": 0.1273,
-        "mean_shift": 0.2015,
+        "psi": 0.1034,
+        "mean_shift": 0.182,
         "reference_mean": 337.13,
-        "recent_mean": 328.59
+        "recent_mean": 328.94
       }
     ],
     "method": "PSI de residuos normalizados por estación, día de semana y hora de Bogotá; referencia solo de entrenamiento.",
@@ -353,7 +353,7 @@
         "samples": 48
       }
     ],
-    "window_end": "2026-09-15T12:00:00+00:00",
+    "window_end": "2026-09-15T12:30:00+00:00",
     "note": "Solo entregas guardadas con verdad completa de las últimas 24 horas virtuales. No es el ranking oficial ni incluye ciclos ausentes."
   },
   "deliveries": {
