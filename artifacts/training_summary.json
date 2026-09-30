@@ -1,38 +1,30 @@
 {
-  "generated_at": "2026-09-18T22:48:01.239292+00:00",
-  "validation_start": "2026-09-02T05:00:00+00:00",
-  "validation_end": "2026-09-09T04:45:00+00:00",
-  "frequency_minutes": 15,
-  "horizons_minutes": [
-    15,
-    30,
-    45,
-    60
-  ],
+  "generated_at": "2026-09-30T18:35:24.024682+00:00",
+  "validation_start": "2026-09-16T01:30:00+00:00",
+  "validation_end": "2026-09-18T01:30:00+00:00",
   "champion_by_horizon": {
     "15": {
-      "model": "gradient_boosting",
-      "wape": 0.1325428434534952,
-      "accuracy_pct": 86.74571565465048,
-      "mae": 47.099418743141435
+      "model": "HistGradientBoostingRegressor",
+      "accuracy_pct": 85.80075645918147,
+      "wape": 0.14199243540818524
     },
     "30": {
-      "model": "gradient_boosting",
-      "wape": 0.13807059044882689,
-      "accuracy_pct": 86.19294095511731,
-      "mae": 48.97866307347758
+      "model": "HistGradientBoostingRegressor",
+      "accuracy_pct": 80.27310402798123,
+      "wape": 0.19726895972018751
     },
     "45": {
-      "model": "gradient_boosting",
-      "wape": 0.1446901726417881,
-      "accuracy_pct": 85.5309827358212,
-      "mae": 50.97342073820656
+      "model": "HistGradientBoostingRegressor",
+      "accuracy_pct": 76.77996602000995,
+      "wape": 0.23220033979990048
     },
     "60": {
-      "model": "gradient_boosting",
-      "wape": 0.1489823533231075,
-      "accuracy_pct": 85.10176466768925,
-      "mae": 52.38438906127393
+      "model": "HistGradientBoostingRegressor",
+      "accuracy_pct": 74.06542715839284,
+      "wape": 0.2593457284160716
     }
-  }
+  },
+  "model_version": "champion-2.0.0",
+  "training_end": "2026-09-18T01:30:00+00:00",
+  "decision_report": "reports/adaptation/decision.json"
 }

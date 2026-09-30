@@ -19,7 +19,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from features import FEATURE_COLUMNS, build_target_features, normalize_station_ids
+from features import FEATURE_COLUMNS, ADAPTIVE_FEATURE_COLUMNS, build_target_features, normalize_station_ids
 from supabase_logging import SupabaseLogger
 
 
@@ -188,7 +188,7 @@ def load_champion(path: Path = ARTIFACT_PATH) -> dict[str, Any]:
     if set(artifact.get("models", {})) != ALLOWED_HORIZONS:
         raise PredictionError("champion.joblib no contiene cuatro pipelines utilizables")
     for horizon, item in artifact["models"].items():
-        if item.get("features") != FEATURE_COLUMNS or not hasattr(item.get("model"), "predict"):
+        if item.get("features") not in (FEATURE_COLUMNS, ADAPTIVE_FEATURE_COLUMNS) or not hasattr(item.get("model"), "predict"):
             raise PredictionError(f"Modelo inválido para horizonte {horizon}")
     for field in ("created_at", "validation_start", "validation_end", "champion_by_horizon"):
         if not artifact.get(field):
@@ -257,6 +257,8 @@ def predict_targets(
         if horizon not in artifact["models"]:
             raise PredictionError(f"No existe modelo para {horizon} minutos")
         item = artifact["models"][horizon]
+        if group[item["features"]].isna().any().any():
+            raise PredictionError("Faltan datos causales para las variables del modelo")
         values = item["model"].predict(group[item["features"]])
         for row, value in zip(group.itertuples(index=False), values, strict=True):
             predictions.append(
@@ -314,16 +316,18 @@ def build_payload(
 ) -> tuple[dict[str, Any], str]:
     validate_predictions(predictions, cycle)
     client_run_id, idempotency_key = stable_identifiers(cycle["cycle_id"], commit)
-    training_end = min(
+    training_end = max(
         pd.Timestamp(item["trained_until"]) for item in artifact["models"].values()
     )
+    if training_end > pd.Timestamp(cycle["data_cutoff"]):
+        raise PredictionError("El modelo utiliza datos posteriores al corte del ciclo")
     payload = {
         "schema_version": "1.0",
         "cycle_id": cycle["cycle_id"],
         "client_run_id": client_run_id,
         "data_cutoff": cycle["data_cutoff"],
         "model": {
-            "version": MODEL_VERSION,
+            "version": artifact.get("model_version", MODEL_VERSION),
             "trained_at": artifact["created_at"],
             "training_data_end": training_end.isoformat(),
             "git_commit": commit,

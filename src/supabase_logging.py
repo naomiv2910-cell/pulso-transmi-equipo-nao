@@ -67,13 +67,22 @@ class SupabaseLogger:
 
     def persist_submission(self, cycle: dict[str, Any], payload: dict[str, Any], submitted_at: str,
                            *, submission_id: str | None = None) -> tuple[str, str, int]:
-        artifact = joblib.load(ROOT / "artifacts/champion.joblib")
-        summary = json.loads((ROOT / "artifacts/training_summary.json").read_text())
+        active = joblib.load(ROOT / "artifacts/champion.joblib")
+        active_version = active.get("model_version", "champion-1.0.0")
+        submitted_version = payload["model"]["version"]
+        if submitted_version == active_version:
+            artifact = active
+        else:
+            # A retry may belong to the previous version: preserve its true metadata.
+            if not all(c.isalnum() or c in "-_." for c in submitted_version):
+                raise ValueError("Versión de modelo inválida")
+            artifact = joblib.load(ROOT / "artifacts/versions" / f"{submitted_version}.joblib")
         raw_path = ROOT / "data/raw/observations.csv"
         training_end = pd.Timestamp(payload["model"]["training_data_end"])
         # The starter dataset spans 45 days and validation reserves the final 7.
         # Prefer the observed minimum locally; CI can derive the same 38-day boundary.
-        training_start = (pd.to_datetime(pd.read_csv(raw_path, usecols=["observed_at"])["observed_at"], utc=True).min()
+        training_start = (pd.Timestamp(artifact["training_start"]) if artifact.get("training_start") else
+                          pd.to_datetime(pd.read_csv(raw_path, usecols=["observed_at"])["observed_at"], utc=True).min()
                           if raw_path.exists() else training_end - pd.Timedelta(days=38))
         targets = cycle["targets"]
         cycle_row = self.upsert("forecast_cycles", {"external_cycle_id": cycle["cycle_id"],
@@ -81,13 +90,16 @@ class SupabaseLogger:
             "target_start": min(x["target_at"] for x in targets), "target_end": max(x["target_at"] for x in targets),
             "closes_at": cycle.get("closes_at")}, "external_cycle_id")[0]
         model = payload["model"]
+        if submitted_version == active_version:
+            self.request("PATCH", "model_versions", params={"model_name":"eq.pulso_transmi_champion", "version":f"neq.{active_version}"},
+                         payload={"is_champion":False}, prefer="return=minimal")
         model_row = self.upsert("model_versions", {"model_name": "pulso_transmi_champion",
             "version": model["version"], "algorithm": "HistGradientBoostingRegressor",
             "training_start": training_start.isoformat(),
             "training_end": model["training_data_end"], "features": artifact["models"][15]["features"],
-            "parameters": {"artifact_created_at": artifact["created_at"]},
-            "validation_metrics": summary["champion_by_horizon"], "artifact_uri": "artifacts/champion.joblib",
-            "commit_sha": model.get("git_commit"), "is_champion": True}, "model_name,version")[0]
+            "parameters": {"artifact_created_at": artifact["created_at"], **artifact.get("adaptation", {})},
+            "validation_metrics": artifact["champion_by_horizon"], "artifact_uri": f"artifacts/versions/{submitted_version}.joblib",
+            "commit_sha": model.get("git_commit"), "is_champion": submitted_version == active_version}, "model_name,version")[0]
         horizons = {(x["station_id"], x["target_at"]): x["horizon_minutes"] for x in targets}
         rows = [{"cycle_id": cycle_row["id"], "model_id": model_row["id"], "station_id": x["station_id"],
             "target_at": x["target_at"], "horizon_minutes": horizons[(x["station_id"], x["target_at"])],

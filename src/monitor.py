@@ -150,7 +150,7 @@ def build_report(observations, predictions, cycles, stations, model):
 
 def run(persist, *, logger=None):
     logger = logger or SupabaseLogger()
-    models = logger.select('model_versions',{'select':'id,version,algorithm,training_end','is_champion':'eq.true','limit':'1'})
+    models = logger.select('model_versions',{'select':'id,version,algorithm,training_end','is_champion':'eq.true','order':'training_end.desc','limit':'1'})
     if not models: raise ValueError('No hay modelo champion registrado')
     model = models[0]
     obs = logger.select_all('observations',{'select':'station_id,observed_at,demand','order':'observed_at.asc,station_id.asc'})

@@ -27,6 +27,11 @@ NUMERIC_FEATURES = [f"lag_{lag}" for lag in LAGS] + [
     "is_weekend",
 ]
 FEATURE_COLUMNS = ["station_id", *NUMERIC_FEATURES]
+ADAPTIVE_FEATURE_COLUMNS = FEATURE_COLUMNS + [
+    "origin_demand", "trend_15", "trend_60", "lag_2", "lag_3",
+    *[f"daily_target_{h}" for h in (15,30,45,60)],
+    *[f"weekly_target_{h}" for h in (15,30,45,60)],
+]
 
 
 def normalize_station_ids(series: pd.Series) -> pd.Series:
@@ -49,6 +54,14 @@ def add_origin_features(frame: pd.DataFrame) -> pd.DataFrame:
     for lag in LAGS:
         data[f"lag_{lag}"] = grouped.shift(lag)
 
+    data["origin_demand"] = data["demand"]
+    data["trend_15"] = data["demand"] - data["lag_1"]
+    data["trend_60"] = data["demand"] - data["lag_4"]
+    for lag in (2,3):
+        data[f"lag_{lag}"] = grouped.shift(lag)
+    for h in (15,30,45,60):
+        data[f"daily_target_{h}"] = grouped.shift(96-h//15)
+        data[f"weekly_target_{h}"] = grouped.shift(672-h//15)
     past = grouped.shift(1)
     for window in ROLLING_WINDOWS:
         data[f"rolling_mean_{window}"] = (

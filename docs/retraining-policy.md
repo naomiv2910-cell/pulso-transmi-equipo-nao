@@ -39,3 +39,7 @@ El informe del 30 de septiembre de 2026 a las 17:56 UTC muestra champion-1.0.0 (
 Pendiente: extraer la cobertura oficial y completar una evaluación temporal champion/candidato antes de decidir promoción. Cambiar el nombre de la versión no cuenta como entrenamiento.
 
 Guía: https://github.com/uexternadojz/pulso-transmi/blob/main/docs/fase-drift.md
+
+## Actualización de ejecución — 30 de septiembre
+
+Se entrenó y aprobó `champion-2.0.0` tras comparar cuatro variantes y superar las reglas de promoción. Evidencia completa: [evaluación temporal](../reports/adaptation/README.md). El criterio de evaluar fue drift fuerte junto con deterioro observado; la persistencia por bloques de seis ciclos no se había automatizado. La decisión se respalda en la comparación reservada, no en asumir que toda alerta exige cambiar de modelo.
