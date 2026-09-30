@@ -1,5 +1,8 @@
 # Pulso TransMi — Equipo Nao
 
+**Modelo activo: champion-2.0.0 (30/09/2026).** Se reentrenó con demanda reciente y se aprobó frente al champion anterior en un holdout temporal reservado: 79,25% frente a 67,23%. Son métricas de backtest, no una promesa de ranking. [Decisión, cortes, métricas y reproducción](reports/adaptation/README.md). La sección de entrenamiento inicial que sigue documenta la versión 1; la adaptación actual se reproduce con `src/adapt.py` y conserva ambas versiones en `artifacts/versions/`.
+
+
 Sistema MLOps para pronosticar la demanda de pasajeros de TransMilenio. Esta primera fase descarga el conjunto inicial del API oficial y genera un análisis exploratorio reproducible.
 
 ## Estructura

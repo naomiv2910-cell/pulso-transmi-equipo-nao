@@ -42,3 +42,5 @@ OMP_NUM_THREADS=2 python src/adapt.py --download --cutoff 2026-09-18T01:30:00+00
 ```
 
 La ejecución usa como referencia la versión 1 archivada, genera un candidato separado y conserva el snapshot local ignorado por Git. Comprobar el hash contra `decision.json`. Las claves no son necesarias para descargar los datos sintéticos publicados. Un reentrenamiento futuro requiere otro identificador de versión y nuevas ventanas de evaluación, sin reutilizar este holdout para ajustar parámetros.
+
+Entorno utilizado: Python 3.12, scikit-learn 1.8.0, NumPy 2.5.3, pandas 2.3.3 y joblib 1.6.0. En la prueba reservada mejoraron las 12 estaciones y los cuatro horizontes.
