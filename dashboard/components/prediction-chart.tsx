@@ -24,7 +24,7 @@ export function PredictionChart({ predictions }: { predictions: Prediction[] }) 
           const baseX = left + stationIndex * stationWidth;
           return <g key={station}>{rows.map((item, index) => {
             const barHeight = (item.predicted_demand / max) * chartHeight;
-            return <rect key={`${station}-${item.horizon_minutes}`} x={baseX + 8 + index * barWidth} y={top + chartHeight - barHeight} width={barWidth - 2} height={barHeight} rx="3" fill={colors[item.horizon_minutes] ?? "#02b8d1"}><title>{station} · {item.horizon_minutes} min: {item.predicted_demand.toFixed(1)}</title></rect>;
+            return <rect key={`${station}-${item.horizon_minutes}`} x={baseX + 8 + index * barWidth} y={top + chartHeight - barHeight} width={barWidth - 2} height={barHeight} rx="3" fill={colors[item.horizon_minutes] ?? "#02b8d1"}><title>{`${station} · ${item.horizon_minutes} min: ${item.predicted_demand.toFixed(1)}`}</title></rect>;
           })}<text x={baseX + stationWidth / 2} y={top + chartHeight + 25} textAnchor="middle" className="station-label">{station}</text></g>;
         })}
       </svg>

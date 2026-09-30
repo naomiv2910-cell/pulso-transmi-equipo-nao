@@ -24,7 +24,7 @@ jobs:
       contents: read
       actions: write
     env:
-      WATCH_UNTIL: ${{ vars.PULSO_WATCH_UNTIL || '2026-10-01T05:00:00Z' }}
+      WATCH_UNTIL: ${{ vars.PULSO_WATCH_UNTIL || '2026-10-03T04:59:00Z' }}
     steps:
       - name: Check end of competition
         id: window
@@ -79,7 +79,7 @@ jobs:
           name: submissions-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/submissions/*.json
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 30
       - name: Refresh drift dashboard independently
         if: always() && !cancelled() && steps.watcher.outputs.renew == 'true'
         continue-on-error: true
