@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-01T03:51:09.095859+00:00",
+  "generated_at": "2026-10-01T04:37:04.200198+00:00",
   "observations": {
-    "count": 62508,
-    "last_at": "2026-09-18T11:00:00+00:00"
+    "count": 62532,
+    "last_at": "2026-09-18T11:30:00+00:00"
   },
   "model": {
     "version": "champion-2.0.0",
@@ -12,8 +12,8 @@
   },
   "drift": {
     "status": "insufficient_data",
-    "window_start": "2026-09-17T11:00:00+00:00",
-    "window_end": "2026-09-18T11:00:00+00:00",
+    "window_start": "2026-09-17T11:30:00+00:00",
+    "window_end": "2026-09-18T11:30:00+00:00",
     "reference_start": "2026-07-26T05:00:00+00:00",
     "reference_end": "2026-09-18T01:30:00+00:00",
     "stations": [
@@ -21,7 +21,7 @@
         "station_id": "02300",
         "name": "Calle 100 - Marketmedios",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -30,7 +30,7 @@
         "station_id": "03000",
         "name": "Portal Suba",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -39,7 +39,7 @@
         "station_id": "05000",
         "name": "Portal Américas",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -48,7 +48,7 @@
         "station_id": "05100",
         "name": "Banderas",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -57,7 +57,7 @@
         "station_id": "06000",
         "name": "Portal El Dorado – C.C. NUESTRO BOGOTÁ",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -66,7 +66,7 @@
         "station_id": "06111",
         "name": "Universidades – CityU",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -75,7 +75,7 @@
         "station_id": "07105",
         "name": "Movistar Arena",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -84,7 +84,7 @@
         "station_id": "07107",
         "name": "Universidad Nacional",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -93,7 +93,7 @@
         "station_id": "07111",
         "name": "Ricaurte - NQS",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -102,7 +102,7 @@
         "station_id": "09000",
         "name": "Portal Usme",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -111,7 +111,7 @@
         "station_id": "09122",
         "name": "Calle 72",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -120,7 +120,7 @@
         "station_id": "10009",
         "name": "Museo Nacional",
         "reference_samples": 5171,
-        "recent_samples": 38,
+        "recent_samples": 40,
         "status": "insufficient_data",
         "psi": null,
         "mean_shift": null
@@ -217,7 +217,7 @@
         "samples": 48
       }
     ],
-    "window_end": "2026-09-18T11:00:00+00:00",
+    "window_end": "2026-09-18T11:30:00+00:00",
     "note": "Solo entregas guardadas con verdad completa de las últimas 24 horas virtuales. No es el ranking oficial ni incluye ciclos ausentes."
   },
   "deliveries": {
