@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-02T07:22:01.515433+00:00",
+  "generated_at": "2026-10-02T08:07:52.863991+00:00",
   "observations": {
-    "count": 63828,
-    "last_at": "2026-09-19T14:30:00+00:00"
+    "count": 63852,
+    "last_at": "2026-09-19T15:00:00+00:00"
   },
   "model": {
     "version": "champion-2.0.0",
@@ -12,8 +12,8 @@
   },
   "drift": {
     "status": "high",
-    "window_start": "2026-09-18T14:30:00+00:00",
-    "window_end": "2026-09-19T14:30:00+00:00",
+    "window_start": "2026-09-18T15:00:00+00:00",
+    "window_end": "2026-09-19T15:00:00+00:00",
     "reference_start": "2026-07-26T05:00:00+00:00",
     "reference_end": "2026-09-18T01:30:00+00:00",
     "stations": [
@@ -23,10 +23,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 3.5529,
-        "mean_shift": 19.9443,
+        "psi": 3.4574,
+        "mean_shift": 19.9815,
         "reference_mean": 314.12,
-        "recent_mean": 643.3
+        "recent_mean": 643.5
       },
       {
         "station_id": "03000",
@@ -34,10 +34,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 2.2392,
-        "mean_shift": 1.449,
+        "psi": 2.24,
+        "mean_shift": 1.4643,
         "reference_mean": 257.02,
-        "recent_mean": 197.78
+        "recent_mean": 197.35
       },
       {
         "station_id": "05000",
@@ -46,9 +46,9 @@
         "recent_samples": 96,
         "status": "high",
         "psi": 2.8938,
-        "mean_shift": 17.4254,
+        "mean_shift": 17.1699,
         "reference_mean": 371.02,
-        "recent_mean": 840.91
+        "recent_mean": 843.36
       },
       {
         "station_id": "05100",
@@ -56,10 +56,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 3.0304,
-        "mean_shift": 3.2429,
+        "psi": 2.9835,
+        "mean_shift": 3.2403,
         "reference_mean": 561.08,
-        "recent_mean": 189.0
+        "recent_mean": 189.05
       },
       {
         "station_id": "06000",
@@ -67,10 +67,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 3.7546,
-        "mean_shift": 15.8233,
+        "psi": 3.6774,
+        "mean_shift": 15.8371,
         "reference_mean": 521.86,
-        "recent_mean": 1241.92
+        "recent_mean": 1241.26
       },
       {
         "station_id": "06111",
@@ -78,10 +78,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 3.9364,
-        "mean_shift": 5.8499,
+        "psi": 3.8789,
+        "mean_shift": 5.9379,
         "reference_mean": 245.41,
-        "recent_mean": 225.38
+        "recent_mean": 224.72
       },
       {
         "station_id": "07105",
@@ -90,9 +90,9 @@
         "recent_samples": 96,
         "status": "high",
         "psi": 3.2629,
-        "mean_shift": 9.6878,
+        "mean_shift": 9.7088,
         "reference_mean": 272.59,
-        "recent_mean": 472.49
+        "recent_mean": 472.92
       },
       {
         "station_id": "07107",
@@ -100,10 +100,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 2.9938,
-        "mean_shift": 5.0602,
+        "psi": 2.8956,
+        "mean_shift": 5.1419,
         "reference_mean": 290.31,
-        "recent_mean": 256.39
+        "recent_mean": 256.02
       },
       {
         "station_id": "07111",
@@ -111,10 +111,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 3.625,
-        "mean_shift": 17.6983,
+        "psi": 3.6715,
+        "mean_shift": 17.7169,
         "reference_mean": 714.07,
-        "recent_mean": 1941.91
+        "recent_mean": 1942.01
       },
       {
         "station_id": "09000",
@@ -123,9 +123,9 @@
         "recent_samples": 96,
         "status": "high",
         "psi": 2.8888,
-        "mean_shift": 1.7741,
+        "mean_shift": 1.7354,
         "reference_mean": 220.74,
-        "recent_mean": 175.04
+        "recent_mean": 174.3
       },
       {
         "station_id": "09122",
@@ -134,9 +134,9 @@
         "recent_samples": 96,
         "status": "high",
         "psi": 3.5279,
-        "mean_shift": 21.7263,
+        "mean_shift": 21.8275,
         "reference_mean": 257.58,
-        "recent_mean": 634.57
+        "recent_mean": 634.41
       },
       {
         "station_id": "10009",
@@ -144,10 +144,10 @@
         "reference_samples": 5171,
         "recent_samples": 96,
         "status": "high",
-        "psi": 3.1883,
-        "mean_shift": 0.0092,
+        "psi": 3.3025,
+        "mean_shift": 0.0166,
         "reference_mean": 336.58,
-        "recent_mean": 197.82
+        "recent_mean": 197.79
       }
     ],
     "method": "PSI de residuos normalizados por estación, día de semana y hora de Bogotá; referencia solo de entrenamiento.",
@@ -161,21 +161,13 @@
   },
   "performance": {
     "status": "available",
-    "accuracy": 52.205,
-    "wape": 0.47795,
-    "mae": 274.804,
+    "accuracy": 53.185,
+    "wape": 0.46815,
+    "mae": 270.205,
     "samples": 1152,
     "evaluated_cycles": 24,
     "pending_cycles": 1,
     "history": [
-      {
-        "cycle_id": "cyc_official-20260921_20260918T140000Z",
-        "target_end": "2026-09-18T15:00:00+00:00",
-        "accuracy": 44.122,
-        "wape": 0.75091,
-        "mae": 328.334,
-        "samples": 48
-      },
       {
         "cycle_id": "cyc_official-20260921_20260918T150000Z",
         "target_end": "2026-09-18T16:00:00+00:00",
@@ -359,351 +351,359 @@
         "wape": 0.62282,
         "mae": 214.496,
         "samples": 48
+      },
+      {
+        "cycle_id": "cyc_official-20260921_20260919T140000Z",
+        "target_end": "2026-09-19T15:00:00+00:00",
+        "accuracy": 60.427,
+        "wape": 0.41867,
+        "mae": 217.962,
+        "samples": 48
       }
     ],
-    "window_end": "2026-09-19T14:30:00+00:00",
+    "window_end": "2026-09-19T15:00:00+00:00",
     "note": "Solo entregas guardadas con verdad completa de las últimas 24 horas virtuales. No es el ranking oficial ni incluye ciclos ausentes."
   },
   "deliveries": {
-    "stored_cycles": 152,
-    "latest_cycle": "cyc_official-20260921_20260919T140000Z",
-    "latest_submitted_at": "2026-10-02T06:48:18.86814+00:00",
+    "stored_cycles": 153,
+    "latest_cycle": "cyc_official-20260921_20260919T150000Z",
+    "latest_submitted_at": "2026-10-02T07:48:17.467335+00:00",
     "latest_predictions": [
       {
         "station_id": "02300",
         "station_name": "Calle 100 - Marketmedios",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 564.182
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 200.583
       },
       {
         "station_id": "03000",
         "station_name": "Portal Suba",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 290.597
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 145.158
       },
       {
         "station_id": "05000",
         "station_name": "Portal Américas",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 769.816
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 1422.814
       },
       {
         "station_id": "05100",
         "station_name": "Banderas",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 51.536
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 182.466
       },
       {
         "station_id": "06000",
         "station_name": "Portal El Dorado – C.C. NUESTRO BOGOTÁ",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 1375.133
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 312.846
       },
       {
         "station_id": "06111",
         "station_name": "Universidades – CityU",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 325.85
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 201.695
       },
       {
         "station_id": "07105",
         "station_name": "Movistar Arena",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 360.578
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 723.204
       },
       {
         "station_id": "07107",
         "station_name": "Universidad Nacional",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 85.882
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 230.272
       },
       {
         "station_id": "07111",
         "station_name": "Ricaurte - NQS",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 2067.317
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 455.224
       },
       {
         "station_id": "09000",
         "station_name": "Portal Usme",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 274.381
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 143.382
       },
       {
         "station_id": "09122",
         "station_name": "Calle 72",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 539.115
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 1033.811
       },
       {
         "station_id": "10009",
         "station_name": "Museo Nacional",
         "horizon_minutes": 15,
-        "target_at": "2026-09-19T14:15:00+00:00",
-        "predicted_demand": 76.563
+        "target_at": "2026-09-19T15:15:00+00:00",
+        "predicted_demand": 215.755
       },
       {
         "station_id": "02300",
         "station_name": "Calle 100 - Marketmedios",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 518.779
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 171.508
       },
       {
         "station_id": "03000",
         "station_name": "Portal Suba",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 241.313
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 127.491
       },
       {
         "station_id": "05000",
         "station_name": "Portal Américas",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 943.719
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 1363.383
       },
       {
         "station_id": "05100",
         "station_name": "Banderas",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 62.759
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 169.002
       },
       {
         "station_id": "06000",
         "station_name": "Portal El Dorado – C.C. NUESTRO BOGOTÁ",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 1191.987
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 314.282
       },
       {
         "station_id": "06111",
         "station_name": "Universidades – CityU",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 297.38
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 166.136
       },
       {
         "station_id": "07105",
         "station_name": "Movistar Arena",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 373.175
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 675.419
       },
       {
         "station_id": "07107",
         "station_name": "Universidad Nacional",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 131.708
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 254.008
       },
       {
         "station_id": "07111",
         "station_name": "Ricaurte - NQS",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 1713.45
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 496.643
       },
       {
         "station_id": "09000",
         "station_name": "Portal Usme",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 224.962
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 124.758
       },
       {
         "station_id": "09122",
         "station_name": "Calle 72",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 733.234
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 901.755
       },
       {
         "station_id": "10009",
         "station_name": "Museo Nacional",
         "horizon_minutes": 30,
-        "target_at": "2026-09-19T14:30:00+00:00",
-        "predicted_demand": 85.022
+        "target_at": "2026-09-19T15:30:00+00:00",
+        "predicted_demand": 229.563
       },
       {
         "station_id": "02300",
         "station_name": "Calle 100 - Marketmedios",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 423.158
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 170.227
       },
       {
         "station_id": "03000",
         "station_name": "Portal Suba",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 215.268
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 108.465
       },
       {
         "station_id": "05000",
         "station_name": "Portal Américas",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 1042.466
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 1779.165
       },
       {
         "station_id": "05100",
         "station_name": "Banderas",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 99.317
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 211.97
       },
       {
         "station_id": "06000",
         "station_name": "Portal El Dorado – C.C. NUESTRO BOGOTÁ",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 893.204
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 356.225
       },
       {
         "station_id": "06111",
         "station_name": "Universidades – CityU",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 277.193
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 176.653
       },
       {
         "station_id": "07105",
         "station_name": "Movistar Arena",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 434.295
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 718.764
       },
       {
         "station_id": "07107",
         "station_name": "Universidad Nacional",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 133.945
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 261.768
       },
       {
         "station_id": "07111",
         "station_name": "Ricaurte - NQS",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 1336.901
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 517.99
       },
       {
         "station_id": "09000",
         "station_name": "Portal Usme",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 219.439
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 113.361
       },
       {
         "station_id": "09122",
         "station_name": "Calle 72",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 789.89
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 936.957
       },
       {
         "station_id": "10009",
         "station_name": "Museo Nacional",
         "horizon_minutes": 45,
-        "target_at": "2026-09-19T14:45:00+00:00",
-        "predicted_demand": 109.247
+        "target_at": "2026-09-19T15:45:00+00:00",
+        "predicted_demand": 296.22
       },
       {
         "station_id": "02300",
         "station_name": "Calle 100 - Marketmedios",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 400.923
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 312.961
       },
       {
         "station_id": "03000",
         "station_name": "Portal Suba",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 187.152
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 94.888
       },
       {
         "station_id": "05000",
         "station_name": "Portal Américas",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 1495.297
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 2141.116
       },
       {
         "station_id": "05100",
         "station_name": "Banderas",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 95.762
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 188.957
       },
       {
         "station_id": "06000",
         "station_name": "Portal El Dorado – C.C. NUESTRO BOGOTÁ",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 766.792
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 1038.364
       },
       {
         "station_id": "06111",
         "station_name": "Universidades – CityU",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 227.814
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 174.26
       },
       {
         "station_id": "07105",
         "station_name": "Movistar Arena",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 729.992
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 522.023
       },
       {
         "station_id": "07107",
         "station_name": "Universidad Nacional",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 222.115
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 261.49
       },
       {
         "station_id": "07111",
         "station_name": "Ricaurte - NQS",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 948.153
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 1129.59
       },
       {
         "station_id": "09000",
         "station_name": "Portal Usme",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 168.794
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 91.093
       },
       {
         "station_id": "09122",
         "station_name": "Calle 72",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 1015.548
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 787.067
       },
       {
         "station_id": "10009",
         "station_name": "Museo Nacional",
         "horizon_minutes": 60,
-        "target_at": "2026-09-19T15:00:00+00:00",
-        "predicted_demand": 143.922
+        "target_at": "2026-09-19T16:00:00+00:00",
+        "predicted_demand": 317.3
       }
     ]
   },
