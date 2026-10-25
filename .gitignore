@@ -12,3 +12,6 @@ data/raw/*.json
 
 # Payloads y recibos locales se conservan fuera del control de versiones.
 artifacts/submissions/
+
+# Local MLflow tracking store (rebuild with scripts/import_mlflow_history.py)
+.mlflow/

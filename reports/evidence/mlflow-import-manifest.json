@@ -1,0 +1,314 @@
+[
+  {
+    "experiment": "Pulso TransMi - Seleccion - Historicos importados",
+    "experiment_id": "1",
+    "name": "refit_21d",
+    "run_id": "79fd290acf074b289254c471eeb30c09",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 79.60287099682087
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Seleccion - Historicos importados",
+    "experiment_id": "1",
+    "name": "adaptive_21d",
+    "run_id": "f09f0022652b45328a3614129ab8e743",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 79.56624143101753
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Seleccion - Historicos importados",
+    "experiment_id": "1",
+    "name": "adaptive_7d",
+    "run_id": "01f80f3f854b49888b058da695d7d992",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 79.87561025330285
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Seleccion - Historicos importados",
+    "experiment_id": "1",
+    "name": "adaptive_weighted_21d",
+    "run_id": "986bf182e44a4344bdc954495d4de966",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 80.588765961542
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Holdout drift - Historicos importados",
+    "experiment_id": "2",
+    "name": "Champion 2 - adaptado",
+    "run_id": "53a237f74bb94c589c6e0075175801c1",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 79.25215397175266,
+      "wape": 0.2074784602824734
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Holdout drift - Historicos importados",
+    "experiment_id": "2",
+    "name": "Champion 1 - anterior",
+    "run_id": "f3db5e95bad1460381753d61f98ab42a",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 67.22963429163795,
+      "wape": 0.385050489431958
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Holdout drift - Historicos importados",
+    "experiment_id": "2",
+    "name": "Baseline - ultima observacion",
+    "run_id": "2df8634224414f94b0c784f076d9e813",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 78.18525572766781,
+      "wape": 0.21814744272332176
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Holdout drift - Historicos importados",
+    "experiment_id": "2",
+    "name": "Baseline - diario",
+    "run_id": "a5846684285c4626bcb548157a6fcf6b",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 75.02908765075038,
+      "wape": 0.2497091234924962
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Holdout drift - Historicos importados",
+    "experiment_id": "2",
+    "name": "Baseline - semanal",
+    "run_id": "f728d32a729e4efa9a863e5e8ed7981d",
+    "source": "reports/adaptation/decision.json",
+    "sha256": "352a36e41857e43f045c158f1fc668cc3f83ddb7f3e7145bb409a588fe6178e4",
+    "metrics": {
+      "accuracy_pct": 59.69672259886902,
+      "wape": 0.5974573749388249
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_last-h15",
+    "run_id": "97cd7bf1e5a545688eda95058aa308e1",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 82.57901222664621,
+      "mean_station_wape": 0.1742098777335379,
+      "mae": 62.77529761904762
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_daily-h15",
+    "run_id": "a38a10e2989c4698a78c7176e3508efc",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 77.89082515102594,
+      "mean_station_wape": 0.2210917484897407,
+      "mae": 76.23983134920636
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_weekly-h15",
+    "run_id": "42c01eac48b14d209229484f31b4d06a",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 83.11229696661745,
+      "mean_station_wape": 0.16887703033382548,
+      "mae": 60.77467757936508
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "gradient_boosting-h15",
+    "run_id": "3350c77c06654618a9f849eee46d4270",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 86.74571565465048,
+      "mean_station_wape": 0.1325428434534952,
+      "mae": 47.099418743141435
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_last-h30",
+    "run_id": "1f3d1b8b7b9341739530a4ce82ebd131",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 77.93926007239713,
+      "mean_station_wape": 0.22060739927602868,
+      "mae": 79.39112103174604
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_daily-h30",
+    "run_id": "2eaac192f6554fc5acfdd1dae87ca68c",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 77.89082515102594,
+      "mean_station_wape": 0.2210917484897407,
+      "mae": 76.23983134920636
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_weekly-h30",
+    "run_id": "cc1851838a8b446fad9bb6589ad7488d",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 83.11229696661745,
+      "mean_station_wape": 0.16887703033382548,
+      "mae": 60.77467757936508
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "gradient_boosting-h30",
+    "run_id": "8f8965115d154158b71ca0b22ec44d74",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 86.19294095511731,
+      "mean_station_wape": 0.13807059044882689,
+      "mae": 48.97866307347758
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_last-h45",
+    "run_id": "e5ea9251e6b54693a196424020b9383e",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 71.87054155478127,
+      "mean_station_wape": 0.2812945844521872,
+      "mae": 101.593998015873
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_daily-h45",
+    "run_id": "cfa2554ec8204cb6be3063770781ccbd",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 77.89082515102594,
+      "mean_station_wape": 0.2210917484897407,
+      "mae": 76.23983134920636
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_weekly-h45",
+    "run_id": "10fc7da9d9914f2b87bd9e600a10192a",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 83.11229696661745,
+      "mean_station_wape": 0.16887703033382548,
+      "mae": 60.77467757936508
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "gradient_boosting-h45",
+    "run_id": "32cd36800b2c40dcbd1293bac7757068",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 85.5309827358212,
+      "mean_station_wape": 0.1446901726417881,
+      "mae": 50.97342073820656
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_last-h60",
+    "run_id": "ebee1e149af04583b4c41976069f331a",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 65.475537982917,
+      "mean_station_wape": 0.34524462017082996,
+      "mae": 124.87053571428572
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_daily-h60",
+    "run_id": "f8e26143b6c041b7a1a53aa1dba57506",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 77.89082515102594,
+      "mean_station_wape": 0.2210917484897407,
+      "mae": 76.23983134920636
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "baseline_weekly-h60",
+    "run_id": "ae53ce78966547ee800856caffe97916",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 83.11229696661745,
+      "mean_station_wape": 0.16887703033382548,
+      "mae": 60.77467757936508
+    }
+  },
+  {
+    "experiment": "Pulso TransMi - Inicial - Historicos importados",
+    "experiment_id": "3",
+    "name": "gradient_boosting-h60",
+    "run_id": "7984b5e305e145a78f2928d98095f6be",
+    "source": "reports/tables/model_metrics.csv",
+    "sha256": "b682b4ddea147a5aa46a34c35ca56105344bfa34171c02c02782c89c10625242",
+    "metrics": {
+      "accuracy_pct": 85.10176466768925,
+      "mean_station_wape": 0.1489823533231075,
+      "mae": 52.38438906127393
+    }
+  }
+]

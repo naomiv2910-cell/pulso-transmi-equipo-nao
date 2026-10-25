@@ -1,0 +1,6 @@
+Hola, profesor. Comparto las evidencias de los componentes opcionales de Pulso TransMi:
+
+• Dashboard en Vercel: https://pulso-transmi-nao.vercel.app
+• Adjunto el pantallazo de MLflow con los experimentos y sus métricas. Los resultados históricos del proyecto fueron importados a MLflow y están identificados como tales.
+
+Equipo Nao.
